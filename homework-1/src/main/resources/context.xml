@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="questionDao" class="org.course.homework.dao.QuestionDaoCsv">
+        <property name="csvResource" value="questions.csv"/>
+    </bean>
+
+    <bean id="randomGenerator" class="org.course.homework.service.RandomGeneratorImpl">
+        <constructor-arg ref="questionDao"/>
+    </bean>
+
+    <bean id="simpleTester" class="org.course.homework.service.TesterServiceImpl">
+        <constructor-arg ref="randomGenerator"/>
+        <constructor-arg value="5"/>
+    </bean>
+</beans>
