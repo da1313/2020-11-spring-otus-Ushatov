@@ -1,0 +1,14 @@
+test:
+  max-answers-count: 5
+  test-question-count: 5
+  pass-rate: 50
+  locale: ru
+  csv-name-prefix: questions
+  csv-location: questions
+  locale-name-prefix: bundle
+  locale-location:
+
+spring:
+  output:
+    ansi:
+      enabled: ALWAYS
