@@ -1,12 +1,10 @@
 package org.course.homework.service;
 
-import lombok.AllArgsConstructor;
 import org.course.homework.config.TestProperties;
 import org.course.homework.domain.Answer;
 import org.course.homework.domain.Question;
 import org.course.homework.service.interfaces.CsvParser;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,19 +12,18 @@ import java.util.List;
 /**
  * Предполагается что в тексте вопросов и ответов нет запятых
  */
-@Service
+@Component
 public class CsvParserSimple implements CsvParser {
 
-    private final int answerCount;
     private final TestProperties testProperties;
 
     public CsvParserSimple(TestProperties testProperties) {
-        this.answerCount = testProperties.getMaxAnswersCount();
         this.testProperties = testProperties;
     }
 
     @Override
     public Question parse(String line){
+        int answerCount = testProperties.getMaxAnswersCount();
         int splitCount = answerCount * 2 + 1;
         String[] tokens = line.split(",", splitCount);
         if (tokens.length < splitCount){

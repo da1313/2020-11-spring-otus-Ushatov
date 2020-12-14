@@ -16,7 +16,7 @@ public class TestServiceImpl implements TestService {
 
     private final QuestionService questionService;
     private final CheckService checkService;
-    private final UserInterfaceImpl userInterface;
+    private final UserInterface userInterface;
     private final TestProperties testProperties;
 
     @Override

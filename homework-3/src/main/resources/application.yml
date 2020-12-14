@@ -2,13 +2,13 @@ test:
   max-answers-count: 5
   test-question-count: 5
   pass-rate: 50
-  locale: ru
-  csv-name-prefix: questions
-  csv-location: questions
-  locale-name-prefix: bundle
-  locale-location:
+  locale: de
+  csv-file-name: questions/questions.csv
 
 spring:
   output:
     ansi:
       enabled: ALWAYS
+  messages:
+    basename: bundle
+    encoding: UTF-8

@@ -1,7 +1,7 @@
 package org.course.homework.service;
 
 import lombok.AllArgsConstructor;
-import org.course.homework.aspect.Log;
+import org.course.homework.aspect.LogUserInput;
 import org.course.homework.config.TestProperties;
 import org.course.homework.domain.Answer;
 import org.course.homework.domain.Question;
@@ -23,7 +23,6 @@ public class UserInterfaceImpl implements UserInterface {
     private final MessageSource messageSource;
     private final TestProperties testProperties;
 
-    @Log
     @Override
     public void printQuestion(Question question, int questionNumber) {
         printService.printf("%d %s\n", questionNumber, question.getQuestionContent());
@@ -36,7 +35,7 @@ public class UserInterfaceImpl implements UserInterface {
         }
     }
 
-    @Log
+    @LogUserInput
     @Override
     public List<Answer> readUserAnswers(Question question) {
         List<Answer> answers = question.getAnswers();
@@ -53,7 +52,7 @@ public class UserInterfaceImpl implements UserInterface {
         return answerNumbers.stream().map(n -> answers.get(n - 1)).collect(Collectors.toList());
     }
 
-    @Log
+    @LogUserInput
     @Override
     public String readUserName() {
         String message = messageSource.getMessage("user.enter.username",new String[]{}, testProperties.getLocale());
@@ -61,7 +60,6 @@ public class UserInterfaceImpl implements UserInterface {
         return printService.readLine();
     }
 
-    @Log
     @Override
     public void printResult(String userName, double userRate, double successRate) {
         String message;

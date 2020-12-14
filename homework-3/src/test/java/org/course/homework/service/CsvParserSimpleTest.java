@@ -19,11 +19,8 @@ class CsvParserSimpleTest {
     public static final int MAX_ANSWERS_COUNT = 5;
     public static final int TEST_QUESTION_COUNT = 5;
     public static final int PASS_RATE = 50;
-    public static final String CSV_NAME_PREFIX = "questions";
-    public static final String CSV_LOCATION = "questions";
-    public static final String LOCALE_NAME_PREFIX = "bundle";
-    public static final String LOCALE_LOCATION = "";
     public static final Locale LOCALE = new Locale("ru");
+    public static final String CSV_FILE_NAME = "questions.csv";
 
     public TestProperties testProperties;
 
@@ -31,13 +28,10 @@ class CsvParserSimpleTest {
     void initProperties(){
         testProperties = new TestProperties(
                 LOCALE,
-                CSV_NAME_PREFIX,
-                CSV_LOCATION,
-                LOCALE_NAME_PREFIX,
-                LOCALE_LOCATION,
                 MAX_ANSWERS_COUNT,
                 TEST_QUESTION_COUNT,
-                PASS_RATE);
+                PASS_RATE,
+                CSV_FILE_NAME);
     }
 
     @DisplayName("При передаче пустой строки кидается исключение")
@@ -58,7 +52,7 @@ class CsvParserSimpleTest {
         Assertions.assertEquals("Parse error. Empty line or insufficient delimiters. " + line, exception.getMessage());
     }
 
-    @DisplayName("Содержание вопроса считанно верно")
+    @DisplayName("Содержание вопроса считано верно")
     @Test
     void getQuestionName() {
         CsvParserSimple parser = new CsvParserSimple(testProperties);
@@ -67,7 +61,7 @@ class CsvParserSimpleTest {
         Assertions.assertEquals(question.getQuestionContent(), "Question 1");
     }
 
-    @DisplayName("Содержание ответов считанно верно")
+    @DisplayName("Содержание ответов считано верно")
     @Test
     void getQuestionAnswers() {
         CsvParserSimple parser = new CsvParserSimple(testProperties);

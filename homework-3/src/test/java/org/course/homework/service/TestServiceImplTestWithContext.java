@@ -7,34 +7,28 @@ import org.course.homework.domain.Answer;
 import org.course.homework.domain.Question;
 import org.course.homework.service.interfaces.*;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
-@DisplayName("Class TestServiceImpl")
-@ExtendWith(MockitoExtension.class)
-class TestServiceImplTest {
-
+@SpringBootTest
+class TestServiceImplTestWithContext {
+    @Autowired
+    private QuestionService questionService;
+    @Autowired
+    private CheckService checkService;
     @Mock
     private UserInterface userInterface;
+    @Autowired
     private TestProperties testProperties;
-
-    public static final int MAX_ANSWERS_COUNT = 5;
-    public static final int TEST_QUESTION_COUNT = 5;
-    public static final int PASS_RATE = 50;
-    public static final Locale LOCALE = new Locale("ru");
-    public static final String CSV_FILE_NAME = "test1/questions.csv";
 
     public static final String USER_NAME = "Ivan";
 
@@ -44,16 +38,6 @@ class TestServiceImplTest {
     private ArgumentCaptor<Double> userRate;
     @Captor
     private ArgumentCaptor<Double> successRate;
-
-    @BeforeEach
-    void initProperties(){
-        testProperties = new TestProperties(
-                LOCALE,
-                MAX_ANSWERS_COUNT,
-                TEST_QUESTION_COUNT,
-                PASS_RATE,
-                CSV_FILE_NAME);
-    }
 
     @DisplayName("Тест 100 правильных")
     @Test

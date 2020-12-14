@@ -3,7 +3,10 @@ package org.course.homework.service;
 import org.course.homework.config.TestProperties;
 import org.course.homework.domain.Answer;
 import org.course.homework.domain.Question;
-import org.course.homework.service.interfaces.*;
+import org.course.homework.service.interfaces.NumberParser;
+import org.course.homework.service.interfaces.PrintService;
+import org.course.homework.service.interfaces.RandomGenerator;
+import org.course.homework.service.interfaces.UserInterface;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,7 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 @DisplayName("Class UserInterfaceImpl")
 @ExtendWith(MockitoExtension.class)
@@ -43,11 +47,8 @@ class UserInterfaceImplTest {
     public static final int MAX_ANSWERS_COUNT = 5;
     public static final int TEST_QUESTION_COUNT = 5;
     public static final double PASS_RATE = 50;
-    public static final String CSV_NAME_PREFIX = "questions";
-    public static final String CSV_LOCATION = "questions";
-    public static final String LOCALE_NAME_PREFIX = "bundle";
-    public static final String LOCALE_LOCATION = "";
     public static final Locale LOCALE = new Locale("ru");
+    public static final String CSV_FILE_NAME = "questions.csv";
 
     public static final String USER_INPUT_1 = "1,3";
     public static final String USER_INPUT_2 = "5";
@@ -82,13 +83,10 @@ class UserInterfaceImplTest {
     void initProperties(){
         testProperties = new TestProperties(
                 LOCALE,
-                CSV_NAME_PREFIX,
-                CSV_LOCATION,
-                LOCALE_NAME_PREFIX,
-                LOCALE_LOCATION,
                 MAX_ANSWERS_COUNT,
                 TEST_QUESTION_COUNT,
-                PASS_RATE);
+                PASS_RATE,
+                CSV_FILE_NAME);
     }
 
     @Test

@@ -14,12 +14,9 @@ import java.util.Locale;
 public class TestProperties {
 
     private final Locale locale;
-    private final String csvNamePrefix;
-    private final String csvLocation;
-    private final String localeNamePrefix;
-    private final String localeLocation;
     private final int maxAnswersCount;
     private final int testQuestionCount;
     private final double passRate;
+    private final String csvFileName;
 
 }
