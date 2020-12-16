@@ -1,0 +1,8 @@
+${AnsiColor.1}___________              __
+${AnsiColor.2}\__    ___/___   _______/  |_  ___________
+${AnsiColor.3}  |    |_/ __ \ /  ___/\   __\/ __ \_  __ \
+${AnsiColor.4}  |    |\  ___/ \___ \  |  | \  ___/|  | \/
+${AnsiColor.5}  |____| \___  >____  > |__|  \___  >__|
+${AnsiColor.6}             \/     \/            \/
+${Ansi.DEFAULT}
+${application.version} ${application.title}
