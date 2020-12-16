@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,7 +26,7 @@ class TestServiceImplTestWithContext {
     private QuestionService questionService;
     @Autowired
     private CheckService checkService;
-    @Mock
+    @MockBean
     private UserInterface userInterface;
     @Autowired
     private TestProperties testProperties;
@@ -69,14 +70,7 @@ class TestServiceImplTestWithContext {
     @DisplayName("Тест один неправильный")
     @Test
     void makeTestOneWrong(){
-        CsvParser parser = new CsvParserSimple(testProperties);
-        LocaleResourceLocator resourceLocator = new LocaleResourceLocatorImpl(testProperties);
-        QuestionDao questionDao = new QuestionDaoCsv(resourceLocator, parser);
-        RandomGenerator randomGenerator = new RandomGeneratorImpl(questionDao);
-        QuestionService questionService = new QuestionServiceImpl(randomGenerator);
-        CheckService checkService = new CheckServiceImpl();
         int count = testProperties.getTestQuestionCount();
-
         Mockito.lenient().when(userInterface.readUserName()).thenReturn(USER_NAME);
 
         List<Question> questionList = questionService.getQuestions(count);
