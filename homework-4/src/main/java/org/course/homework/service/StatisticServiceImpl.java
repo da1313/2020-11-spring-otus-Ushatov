@@ -16,9 +16,11 @@ public class StatisticServiceImpl implements StatisticService {
     private final TestDao testDao;
 
     @Override
-    public String getStatistics(User user) {
+    public String getStatistics(User user) throws IllegalArgumentException {
         List<UserTest> userTests = testDao.findByUser(user);
-        if (userTests.isEmpty()) return "Take the test first!";
+        if (userTests.isEmpty()) {
+            throw new IllegalArgumentException("Statistics can not be calculated with empty test data!");
+        }
         StringBuilder buffer = new StringBuilder();
         int attempts = userTests.size();
         for (int i = 0; i < attempts; i++) {

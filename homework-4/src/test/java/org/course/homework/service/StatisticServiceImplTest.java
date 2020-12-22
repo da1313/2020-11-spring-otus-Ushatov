@@ -26,6 +26,7 @@ class StatisticServiceImplTest {
     public final static int USER_ID = 0;
     public final static String USER_NAME = "Ivan";
 
+    @DisplayName("Статистика считается корректно")
     @Test
     void getStatistics() {
         User user = new User();
@@ -43,5 +44,18 @@ class StatisticServiceImplTest {
         StatisticService statisticService = new StatisticServiceImpl(testDao);
         String output = statisticService.getStatistics(user);
         assertEquals("0.0\n10.0\n20.0\n30.0\n40.0", output);
+    }
+
+    @DisplayName("Кидается исключение если список тестов пуст")
+    @Test
+    void shouldThrowExceptionOnEmptyTestList(){
+        User user = new User();
+        user.setId(USER_ID);
+        user.setName(USER_NAME);
+        List<UserTest> userTestList = new ArrayList<>();
+        Mockito.when(testDao.findByUser(user)).thenReturn(userTestList);
+        StatisticService statisticService = new StatisticServiceImpl(testDao);
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> statisticService.getStatistics(user));
+        assertEquals("Statistics can not be calculated with empty test data!", exception.getMessage());
     }
 }

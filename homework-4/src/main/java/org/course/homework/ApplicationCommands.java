@@ -35,7 +35,11 @@ public class ApplicationCommands {
     @ShellMethodAvailability("isCommandAvailable")
     public String printStatistic(){
         User user = loginService.getUser();
-        return statisticService.getStatistics(user);
+        try{
+            return statisticService.getStatistics(user);
+        } catch (IllegalArgumentException e){
+            return "Take the test first!";
+        }
     }
 
     @ShellMethod(value = "Authenticate user", key = {"login", "l"})
