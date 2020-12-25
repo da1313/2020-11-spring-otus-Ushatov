@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:library
+    h2:
+      console:
+        path: /h2-console
+        settings:
+          web-allow-others: true
+  liquibase:
+    enabled: true
+  shell:
+    interactive:
+      enabled: true
+app:
+  tables: [books, authors, genres, categories]
