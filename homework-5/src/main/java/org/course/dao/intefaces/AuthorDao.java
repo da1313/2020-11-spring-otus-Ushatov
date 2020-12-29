@@ -15,7 +15,7 @@ public interface AuthorDao {
 
     void delete();
 
-    Long createAndIncrement(Author author);
+    Long create(Author author);
 
     void update(Author author);
 

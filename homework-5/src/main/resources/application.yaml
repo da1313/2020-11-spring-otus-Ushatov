@@ -11,5 +11,3 @@ spring:
   shell:
     interactive:
       enabled: true
-app:
-  tables: [books, authors, genres, categories]

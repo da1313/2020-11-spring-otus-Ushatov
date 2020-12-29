@@ -12,7 +12,7 @@ public interface BookDao {
 
     List<Book> findAll();
 
-    Long createAndIncrement(Book book);
+    Long create(Book book);
 
     void update(Book book);
 

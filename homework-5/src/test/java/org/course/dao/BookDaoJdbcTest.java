@@ -85,7 +85,7 @@ class BookDaoJdbcTest {
     @Test
     void shouldFindEntityById() {
         Book expected = books.get(1);
-        Book actual = bookDao.findById(1).get();
+        Book actual = bookDao.findById(1).orElseGet(() -> fail("Book not found!"));
         assertEquals(expected, actual);
     }
 
@@ -103,8 +103,8 @@ class BookDaoJdbcTest {
     void shouldCreateBookWithEmptyAuthorAndGenre() {
         Book expected = new Book();
         expected.setName(NEW_BOOK_NAME);
-        Long actualId = bookDao.createAndIncrement(expected);
-        Book actual = bookDao.findById(actualId).get();
+        Long actualId = bookDao.create(expected);
+        Book actual = bookDao.findById(actualId).orElseGet(() -> fail("Book not found!"));
         assertEquals(expected, actual);
     }
 
@@ -113,8 +113,8 @@ class BookDaoJdbcTest {
         Book expected = new Book();
         expected.setName(NEW_BOOK_NAME);
         expected.setGenre(genres.get(1));
-        Long actualId = bookDao.createAndIncrement(expected);
-        Book actual = bookDao.findById(actualId).get();
+        Long actualId = bookDao.create(expected);
+        Book actual = bookDao.findById(actualId).orElseGet(() -> fail("Book not found!"));
         assertEquals(expected, actual);
     }
 
@@ -123,16 +123,16 @@ class BookDaoJdbcTest {
         Book expected = new Book();
         expected.setName(NEW_BOOK_NAME);
         expected.setAuthor(authors.get(1));
-        Long actualId = bookDao.createAndIncrement(expected);
-        Book actual = bookDao.findById(actualId).get();
+        Long actualId = bookDao.create(expected);
+        Book actual = bookDao.findById(actualId).orElseGet(() -> fail("Book not found!"));
         assertEquals(expected, actual);
     }
 
     @Test
     void shouldCreateBookWithAuthorAndGenre() {
         Book expected = new Book(NEW_BOOK_NAME, authors.get(1), genres.get(1));
-        Long actualId = bookDao.createAndIncrement(expected);
-        Book actual = bookDao.findById(actualId).get();
+        Long actualId = bookDao.create(expected);
+        Book actual = bookDao.findById(actualId).orElseGet(() -> fail("Book not found!"));
         assertEquals(expected, actual);
     }
 
@@ -140,78 +140,78 @@ class BookDaoJdbcTest {
 
     @Test
     void shouldSetBookNameAuthorGenre() {
-        Book book = bookDao.findById(1).get();
+        Book book = bookDao.findById(1).orElseGet(() -> fail("Book not found!"));
         book.setName(NEW_BOOK_NAME);
         book.setAuthor(authors.get(2));
         book.setGenre(genres.get(2));
         bookDao.update(book);
-        Book actual = bookDao.findById(1).get();
+        Book actual = bookDao.findById(1).orElseGet(() -> fail("Book not found!"));
         assertEquals(book, actual);
     }
 
     @Test
     void shouldSetBookName() {
-        Book book = bookDao.findById(1).get();
+        Book book = bookDao.findById(1).orElseGet(() -> fail("Book not found!"));
         book.setName(NEW_BOOK_NAME);
         bookDao.update(book);
-        Book actual = bookDao.findById(1).get();
+        Book actual = bookDao.findById(1).orElseGet(() -> fail("Book not found!"));
         assertEquals(book, actual);
     }
 
     @Test
     void shouldSetAuthor() {
-        Book book = bookDao.findById(1).get();
+        Book book = bookDao.findById(1).orElseGet(() -> fail("Book not found!"));
         book.setAuthor(authors.get(2));
         bookDao.update(book);
-        Book actual = bookDao.findById(1).get();
+        Book actual = bookDao.findById(1).orElseGet(() -> fail("Book not found!"));
         assertEquals(book, actual);
     }
 
     @Test
     void shouldSetGenre() {
-        Book book = bookDao.findById(1).get();
+        Book book = bookDao.findById(1).orElseGet(() -> fail("Book not found!"));
         book.setGenre(genres.get(2));
         bookDao.update(book);
-        Book actual = bookDao.findById(1).get();
+        Book actual = bookDao.findById(1).orElseGet(() -> fail("Book not found!"));
         assertEquals(book, actual);
     }
 
     @Test
     void shouldSetAuthorGenreToNull() {
-        Book book = bookDao.findById(1).get();
+        Book book = bookDao.findById(1).orElseGet(() -> fail("Book not found!"));
         book.setAuthor(null);
         book.setGenre(null);
         bookDao.update(book);
-        Book actual = bookDao.findById(1).get();
+        Book actual = bookDao.findById(1).orElseGet(() -> fail("Book not found!"));
         assertEquals(book, actual);
     }
 
     @Test
     void shouldSetAuthorToNull() {
-        Book book = bookDao.findById(1).get();
+        Book book = bookDao.findById(1).orElseGet(() -> fail("Book not found!"));
         book.setAuthor(null);
         book.setGenre(genres.get(2));
         bookDao.update(book);
-        Book actual = bookDao.findById(1).get();
+        Book actual = bookDao.findById(1).orElseGet(() -> fail("Book not found!"));
         assertEquals(book, actual);
     }
 
     @Test
     void shouldSetGenreToNull() {
-        Book book = bookDao.findById(1).get();
+        Book book = bookDao.findById(1).orElseGet(() -> fail("Book not found!"));
         book.setAuthor(authors.get(2));
         book.setGenre(null);
         bookDao.update(book);
-        Book actual = bookDao.findById(1).get();
+        Book actual = bookDao.findById(1).orElseGet(() -> fail("Book not found!"));
         assertEquals(book, actual);
     }
 
     @Test
     void shouldAddCategoryToBook(){
-        Book book = bookDao.findById(3).get();
-        Category category = categoryDao.findById(3).get();
+        Book book = bookDao.findById(3).orElseGet(() -> fail("Book not found!"));
+        Category category = categoryDao.findById(3).orElseGet(() -> fail("Category not found!"));
         bookDao.addCategory(book, category);
-        Book book1 = bookDao.findById(3).get();
+        Book book1 = bookDao.findById(3).orElseGet(() -> fail("Book not found!"));
         assertAll(
                 () -> assertTrue(book.getCategories().contains(category)),
                 () -> assertTrue(book1.getCategories().contains(category))
@@ -220,10 +220,10 @@ class BookDaoJdbcTest {
 
     @Test
     void shouldRemoveCategoryFromBook(){
-        Book book = bookDao.findById(1).get();
-        Category category = categoryDao.findById(3).get();
+        Book book = bookDao.findById(1).orElseGet(() -> fail("Book not found!"));
+        Category category = categoryDao.findById(3).orElseGet(() -> fail("Book not found!"));
         bookDao.removeCategory(book, category);
-        Book book1 = bookDao.findById(1).get();
+        Book book1 = bookDao.findById(1).orElseGet(() -> fail("Book not found!"));
         assertAll(
                 () -> assertFalse(book.getCategories().contains(category)),
                 () -> assertFalse(book1.getCategories().contains(category))

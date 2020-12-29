@@ -91,7 +91,7 @@ class CategoryDaoJdbcTest {
     @Test
     void shouldFindEntityBySpecifiedId() {
         Category expected = categories.get(1);
-        Category actual = categoryDao.findById(1).get();
+        Category actual = categoryDao.findById(1).orElseGet(() -> fail("Category not found!"));
         assertEquals(expected, actual);
     }
 
@@ -106,35 +106,35 @@ class CategoryDaoJdbcTest {
     void shouldCreateNewEntity(){
         Category expected = new Category();
         expected.setName(NEW_CATEGORY);
-        Long actualId = categoryDao.createAndIncrement(expected);
-        Category actual = categoryDao.findById(actualId).get();
+        Long actualId = categoryDao.create(expected);
+        Category actual = categoryDao.findById(actualId).orElseGet(() -> fail("Category not found!"));
         assertEquals(expected, actual);
     }
 
     @Test
     void shouldAddBookToCategory() {
-        Category category = categoryDao.findById(3).get();
-        Book book = bookDao.findById(2).get();
+        Category category = categoryDao.findById(3).orElseGet(() -> fail("Category not found!"));
+        Book book = bookDao.findById(2).orElseGet(() -> fail("Book not found!"));
         categoryDao.addBook(category, book);
-        Category category1 = categoryDao.findById(3).get();
+        Category category1 = categoryDao.findById(3).orElseGet(() -> fail("Category not found!"));
         assertTrue(category1.getBooks().contains(book));
     }
 
     @Test
     void shouldRemoveBookFromCategory(){
-        Category category = categoryDao.findById(2).get();
-        Book book = bookDao.findById(2).get();
+        Category category = categoryDao.findById(2).orElseGet(() -> fail("Category not found!"));
+        Book book = bookDao.findById(2).orElseGet(() -> fail("Book not found!"));
         categoryDao.removeBook(category, book);
-        Category category1 = categoryDao.findById(2).get();
+        Category category1 = categoryDao.findById(2).orElseGet(() -> fail("Category not found!"));
         assertFalse(category1.getBooks().contains(book));
     }
 
     @Test
     void shouldUpdateExistingEntity() {
-        Category expected = categoryDao.findById(1).get();
+        Category expected = categoryDao.findById(1).orElseGet(() -> fail("Category not found!"));
         expected.setName(NEW_CATEGORY);
         categoryDao.update(expected);
-        Category actual = categoryDao.findById(1).get();
+        Category actual = categoryDao.findById(1).orElseGet(() -> fail("Category not found!"));
         assertEquals(expected, actual);
     }
 

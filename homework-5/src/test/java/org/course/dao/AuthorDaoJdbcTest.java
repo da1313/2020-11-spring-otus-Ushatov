@@ -31,7 +31,7 @@ class AuthorDaoJdbcTest {
     void shouldFindEntityBySpecifiedId() {
         Author expected = new Author(FIRST_AUTHOR_ID, FIRST_AUTHOR_NAME);
         Optional<Author> author = authorDao.findById(FIRST_AUTHOR_ID);
-        assertEquals(expected, author.get());
+        assertEquals(expected, author.orElseGet(() -> fail("Author not found!")));
     }
 
     @Test
@@ -61,26 +61,24 @@ class AuthorDaoJdbcTest {
 
     @Test
     void shouldCreateNewEntity() {
-        Author author = new Author();
-        author.setName(NEW_AUTHOR_NAME);
-        Long id = authorDao.createAndIncrement(author);
-        Author actual = authorDao.findById(id).get();
+        Author author = new Author(NEW_AUTHOR_NAME);
+        Long id = authorDao.create(author);
+        Author actual = authorDao.findById(id).orElseGet(() -> fail("Author not found!"));
         assertEquals(author, actual);
     }
 
     @Test
     void shouldUpdateExistingEntity() {
-        Author author = authorDao.findById(FIRST_AUTHOR_ID).get();
+        Author author = authorDao.findById(FIRST_AUTHOR_ID).orElseGet(() -> fail("Author not found!"));
         author.setName(CHANGED_AUTHOR_NAME);
         authorDao.update(author);
-        Author actual = authorDao.findById(FIRST_AUTHOR_ID).get();
+        Author actual = authorDao.findById(FIRST_AUTHOR_ID).orElseGet(() -> fail("Author not found!"));
         assertEquals(author, actual);
     }
 
     @Test
     void shouldThrowExceptionIfUpdatedEntityIdIsNotSet(){
-        Author author = new Author();
-        author.setName(NEW_AUTHOR_NAME);
+        Author author = new Author(NEW_AUTHOR_NAME);
         assertThrows(IllegalArgumentException.class, () -> authorDao.update(author));
     }
 

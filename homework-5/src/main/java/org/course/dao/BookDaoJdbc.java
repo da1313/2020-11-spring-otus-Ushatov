@@ -6,8 +6,9 @@ import org.course.dao.mappers.BookMapper;
 import org.course.dao.mappers.CategoryMapper;
 import org.course.domain.Book;
 import org.course.domain.Category;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -17,7 +18,6 @@ import org.springframework.stereotype.Repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Repository
 @AllArgsConstructor
@@ -25,20 +25,23 @@ public class BookDaoJdbc implements BookDao {
 
     private final NamedParameterJdbcOperations namedParameterJdbcOperations;
 
-    @AllArgsConstructor
-    static class CategoriesOfBook {
-        Long bookId;
-        Category category;
-    }
-
-    static class CategoriesOfBookMapper implements RowMapper<CategoriesOfBook> {
+    static class CategoriesOfBook implements ResultSetExtractor<Map<Long, List<Category>>>{
         @Override
-        public CategoriesOfBook mapRow(ResultSet resultSet, int i) throws SQLException {
-            long bookId = resultSet.getLong("bookId");
-            long categoryId = resultSet.getLong("categoryId");
-            String categoryName = resultSet.getString("categoryName");
-            Category category = new Category(categoryId, categoryName);
-            return new CategoriesOfBook(bookId, category);
+        public Map<Long, List<Category>> extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+            Map<Long, List<Category>> categoriesOfBook = new HashMap<>();
+            while (resultSet.next()){
+                long bookId = resultSet.getLong("bookId");
+                long categoryId = resultSet.getLong("categoryId");
+                String categoryName = resultSet.getString("categoryName");
+                if (categoriesOfBook.containsKey(bookId)){
+                    categoriesOfBook.get(bookId).add(new Category(categoryId, categoryName));
+                } else {
+                    List<Category> categories = new ArrayList<>();
+                    categories.add(new Category(categoryId, categoryName));
+                    categoriesOfBook.put(bookId, categories);
+                }
+            }
+            return categoriesOfBook;
         }
     }
 
@@ -59,7 +62,7 @@ public class BookDaoJdbc implements BookDao {
                             " left join genres g on b.genre_id = g.id" +
                             " where b.id = :id", params, new BookMapper());
             List<Category> categories = namedParameterJdbcOperations.query(
-                    "select c.id as categoryId," +
+                    "select distinct c.id as categoryId," +
                             " c.name as categoryName" +
                             " from categories c" +
                             " join books_to_categories btc on c.id = btc.category_id" +
@@ -84,41 +87,28 @@ public class BookDaoJdbc implements BookDao {
                     " from books b" +
                     " left join authors a on b.author_id = a.id" +
                     " left join genres g on b.genre_id = g.id", new BookMapper());
-        List<CategoriesOfBook> categoriesOfBooks = namedParameterJdbcOperations.query(
-                "select" +
+        Map<Long, List<Category>> categoriesOfBooks = namedParameterJdbcOperations.query(
+                "select distinct" +
                     " btc.book_id as bookId," +
                     " c.id as categoryId," +
                     " c.name as categoryName" +
                     " from categories c" +
                     " join books_to_categories btc on c.id = btc.category_id" +
-                    " where btc.book_id in (select b.id from books b)", new CategoriesOfBookMapper());
-        books.forEach(b -> b.getCategories().addAll(categoriesOfBooks.stream()
-                .filter(c -> c.bookId.equals(b.getId())).map(c -> c.category).collect(Collectors.toList())));
+                    " where btc.book_id in (select b.id from books b)", new CategoriesOfBook());
+        if (categoriesOfBooks == null) return books;
+        books.stream().filter(book -> categoriesOfBooks.containsKey(book.getId()))
+                .forEach(book -> book.setCategories(categoriesOfBooks.get(book.getId())));
         return books;
     }
 
     @Override
-    public Long createAndIncrement(Book book) {
+    public Long create(Book book) {
         KeyHolder keyHolder  = new GeneratedKeyHolder();
         MapSqlParameterSource params = new MapSqlParameterSource();
-        if ((book.getAuthor() == null && book.getGenre() == null)
-                || ((book.getAuthor() != null && book.getAuthor().getId() == null) && ((book.getGenre() != null && book.getGenre().getId() == null)))){
-            params.addValue("name", book.getName());
-            namedParameterJdbcOperations.update("insert into books(name) values (:name)", params, keyHolder);
-        } else if (book.getAuthor() == null && (book.getGenre() != null && book.getGenre().getId() != null)){
-            params.addValue("name", book.getName());
-            params.addValue("genreId", book.getGenre().getId());
-            namedParameterJdbcOperations.update("insert into books(name, genre_id) values (:name, :genreId)", params, keyHolder);
-        } else if (book.getGenre() == null && (book.getAuthor() != null && book.getAuthor().getId() != null)){
-            params.addValue("name", book.getName());
-            params.addValue("authorId", book.getAuthor().getId());
-            namedParameterJdbcOperations.update("insert into books(name, author_id) values (:name, :authorId)", params, keyHolder);
-        } else {
-            params.addValue("name", book.getName());
-            params.addValue("authorId", book.getAuthor().getId());
-            params.addValue("genreId", book.getGenre().getId());
-            namedParameterJdbcOperations.update("insert into books(name, author_id, genre_id) values (:name, :authorId, :genreId)", params, keyHolder);
-        }
+        params.addValue("name", book.getName());
+        params.addValue("authorId", book.getAuthor() == null ? null : book.getAuthor().getId());
+        params.addValue("genreId", book.getGenre() == null? null : book.getGenre().getId());
+        namedParameterJdbcOperations.update("insert into books(name, author_id, genre_id) values (:name, :authorId, :genreId)", params, keyHolder);
         book.setId((Long) keyHolder.getKey());
         return (Long) keyHolder.getKey();
     }
@@ -127,24 +117,10 @@ public class BookDaoJdbc implements BookDao {
     public void update(Book book) {
         Map<String, Object> params = new HashMap<>();
         params.put("id", book.getId());
-        if ((book.getAuthor() == null && book.getGenre() == null)
-                || ((book.getAuthor() != null && book.getAuthor().getId() == null) && ((book.getGenre() != null && book.getGenre().getId() == null)))){
-            params.put("name", book.getName());
-            namedParameterJdbcOperations.update("update books set name = :name, author_id = null, genre_id = null where id = :id", params);
-        } else if (book.getAuthor() == null && (book.getGenre() != null && book.getGenre().getId() != null)){
-            params.put("name", book.getName());
-            params.put("genreId", book.getGenre().getId());
-            namedParameterJdbcOperations.update("update books set name = :name, author_id = null, genre_id = :genreId where id = :id", params);
-        } else if (book.getGenre() == null && (book.getAuthor() != null && book.getAuthor().getId() != null)){
-            params.put("name", book.getName());
-            params.put("authorId", book.getAuthor().getId());
-            namedParameterJdbcOperations.update("update books set name = :name, author_id = :authorId, genre_id = null where id = :id", params);
-        } else {
-            params.put("name", book.getName());
-            params.put("authorId", book.getAuthor().getId());
-            params.put("genreId", book.getGenre().getId());
-            namedParameterJdbcOperations.update("update books set name = :name, author_id = :authorId, genre_id = :genreId where id = :id", params);
-        }
+        params.put("name", book.getName());
+        params.put("authorId", book.getAuthor() == null ? null : book.getAuthor().getId());
+        params.put("genreId", book.getGenre() == null? null : book.getGenre().getId());
+        namedParameterJdbcOperations.update("update books set name = :name, author_id = :authorId, genre_id = :genreId where id = :id", params);
     }
 
     @Override
@@ -154,7 +130,6 @@ public class BookDaoJdbc implements BookDao {
         params.put("categoryId", category.getId());
         namedParameterJdbcOperations.update("insert into books_to_categories(book_id, category_id) values(:bookId, :categoryId)", params);
         book.getCategories().add(category);
-        category.getBooks().add(book);
     }
 
     @Override
@@ -165,7 +140,6 @@ public class BookDaoJdbc implements BookDao {
         namedParameterJdbcOperations.update("delete from books_to_categories" +
                 " where book_id = :bookId and category_id = :categoryId", params);
         book.getCategories().remove(category);
-        category.getBooks().remove(book);
     }
 
     @Override

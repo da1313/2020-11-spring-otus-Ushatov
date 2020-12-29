@@ -49,7 +49,7 @@ public class CategoryDaoJdbc implements CategoryDao {
     }
 
     @Override
-    public Long createAndIncrement(Category category) {
+    public Long create(Category category) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("name", category.getName());
@@ -65,7 +65,7 @@ public class CategoryDaoJdbc implements CategoryDao {
             Category category = namedParameterJdbcOperations.queryForObject("select c.id as categoryId, c.name as categoryName" +
                     " from categories c where c.id = :id", params, new CategoryMapper());
             List<Book> books = namedParameterJdbcOperations.query(
-                    "select b.id as bookId," +
+                    "select distinct b.id as bookId," +
                     " b.name as bookName," +
                     " a.id as authorId," +
                     " a.name as authorName," +
@@ -88,7 +88,7 @@ public class CategoryDaoJdbc implements CategoryDao {
         List<Category> categories = namedParameterJdbcOperations.query("select c.id as categoryId, c.name as categoryName" +
                 " from categories c", new CategoryMapper());
         List<BooksOfCategory> booksOfCategories = namedParameterJdbcOperations.query(
-                "select btc.category_id as categoryId," +
+                "select distinct btc.category_id as categoryId," +
                 " b.id as bookId," +
                 " b.name as bookName," +
                 " a.id as authorId," +

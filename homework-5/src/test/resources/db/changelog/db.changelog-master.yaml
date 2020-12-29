@@ -1,5 +1,5 @@
 databaseChangeLog:
   - include:
-      file: db/changelog/init.sql
+      file: db/changelog/01-2020-12-24-create-data-base.sql
   - include:
-      file: db/changelog/add_data.sql
+      file: db/changelog/02-2020-12-24-load-test-data-to-database.sql

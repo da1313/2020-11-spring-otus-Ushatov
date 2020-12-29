@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface CategoryDao {
 
-    Long createAndIncrement(Category category);
+    Long create(Category category);
 
     Optional<Category> findById(long id);
 

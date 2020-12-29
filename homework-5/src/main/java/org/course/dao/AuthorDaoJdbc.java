@@ -47,7 +47,7 @@ public class AuthorDaoJdbc implements AuthorDao {
     }
 
     @Override
-    public Long createAndIncrement(Author author) {
+    public Long create(Author author) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("name", author.getName());

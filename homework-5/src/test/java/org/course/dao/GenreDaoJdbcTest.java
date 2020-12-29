@@ -40,7 +40,7 @@ class GenreDaoJdbcTest {
     @Test
     void shouldFindEntityBySpecifiedId() {
         Genre expected = genres.get(1);
-        Genre actual = genreDao.findById(1).get();
+        Genre actual = genreDao.findById(1).orElseGet(() -> fail("Genre not found!"));
         assertEquals(expected, actual);
     }
 
@@ -67,26 +67,24 @@ class GenreDaoJdbcTest {
 
     @Test
     void shouldCreateNewEntity() {
-        Genre expected = new Genre();
-        expected.setName(NEW_GENRE);
-        Long actualId = genreDao.createAndIncrement(expected);
-        Genre actual = genreDao.findById(actualId).get();
+        Genre expected = new Genre(NEW_GENRE);
+        Long actualId = genreDao.create(expected);
+        Genre actual = genreDao.findById(actualId).orElseGet(() -> fail("Genre not found!"));
         assertEquals(expected, actual);
     }
 
     @Test
     void shouldUpdateExistingEntity() {
-        Genre expected = genreDao.findById(1).get();
+        Genre expected = genreDao.findById(1).orElseGet(() -> fail("Genre not found!"));
         expected.setName(NEW_GENRE);
         genreDao.update(expected);
-        Genre actual = genreDao.findById(1).get();
+        Genre actual = genreDao.findById(1).orElseGet(() -> fail("Genre not found!"));
         assertEquals(expected, actual);
     }
 
     @Test
     void shouldThrowExceptionIfUpdatedEntityIdIsNotSet(){
-        Genre genre = new Genre();
-        genre.setName(NEW_GENRE);
+        Genre genre = new Genre(NEW_GENRE);
         assertThrows(IllegalArgumentException.class, () -> genreDao.update(genre));
     }
 
