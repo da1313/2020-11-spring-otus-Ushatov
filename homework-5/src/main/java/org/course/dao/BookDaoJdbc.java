@@ -89,12 +89,12 @@ public class BookDaoJdbc implements BookDao {
                     " left join genres g on b.genre_id = g.id", new BookMapper());
         Map<Long, List<Category>> categoriesOfBooks = namedParameterJdbcOperations.query(
                 "select distinct" +
-                    " btc.book_id as bookId," +
+                    " b.id as bookId," +
                     " c.id as categoryId," +
                     " c.name as categoryName" +
                     " from categories c" +
                     " join books_to_categories btc on c.id = btc.category_id" +
-                    " where btc.book_id in (select b.id from books b)", new CategoriesOfBook());
+                    " join books b on b.id = btc.book_id", new CategoriesOfBook());
         if (categoriesOfBooks == null) return books;
         books.stream().filter(book -> categoriesOfBooks.containsKey(book.getId()))
                 .forEach(book -> book.setCategories(categoriesOfBooks.get(book.getId())));

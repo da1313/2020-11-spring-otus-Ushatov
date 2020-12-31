@@ -29,10 +29,10 @@ class BookDaoJdbcTest {
     public static final int CATEGORY_COUNT = 3;
     public static final int BOOK_COUNT = 6;
     public static final String NEW_BOOK_NAME = "NEW";
-    private List<Author> authors = new ArrayList<>();
-    private List<Genre> genres = new ArrayList<>();
-    private List<Category> categories = new ArrayList<>();
-    private List<Book> books = new ArrayList<>();
+    private final List<Author> authors = new ArrayList<>();
+    private final List<Genre> genres = new ArrayList<>();
+    private final List<Category> categories = new ArrayList<>();
+    private final List<Book> books = new ArrayList<>();
     @Autowired
     private BookDao bookDao;
     @Autowired

@@ -88,7 +88,7 @@ public class CategoryDaoJdbc implements CategoryDao {
         List<Category> categories = namedParameterJdbcOperations.query("select c.id as categoryId, c.name as categoryName" +
                 " from categories c", new CategoryMapper());
         List<BooksOfCategory> booksOfCategories = namedParameterJdbcOperations.query(
-                "select distinct btc.category_id as categoryId," +
+                "select distinct c.id as categoryId," +
                 " b.id as bookId," +
                 " b.name as bookName," +
                 " a.id as authorId," +
@@ -99,7 +99,7 @@ public class CategoryDaoJdbc implements CategoryDao {
                 " join books b on btc.book_id = b.id" +
                 " join authors a on b.author_id = a.id" +
                 " join genres g on b.genre_id = g.id" +
-                " where btc.category_id in (select c.id from categories c)", new BooksOfCategoryMapper());
+                " join categories c on c.id = btc.category_id", new BooksOfCategoryMapper());
         categories.forEach(c -> c.getBooks().addAll(booksOfCategories.stream()
                 .filter(b -> b.categoryId.equals(c.getId())).map(b -> b.book).collect(Collectors.toList())));
         return categories;
