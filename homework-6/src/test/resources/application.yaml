@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: jdbc:h2:library
+#    username: postgres
+#    password: postgres
+#    initialization-mode: always
+#    h2:
+#      console:
+#        path: /h2-console
+#        settings:
+#          web-allow-others: true
+  jpa:
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
+  liquibase:
+    enabled: true
+  shell:
+    interactive:
+      enabled: false
