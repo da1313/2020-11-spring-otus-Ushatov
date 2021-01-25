@@ -24,6 +24,13 @@ class BookRepositoryTest {
     public static final long EXPECTED_QUERY_COUNT = 1L;
     public static final int PAGE_SIZE = 3;
     public static final int PAGE_NUMBER = 0;
+    public static final long EXPECTED_BOOK_COMMENTS_COUNT = 2L;
+    public static final long EXPECTED_ONE = 0L;
+    public static final long EXPECTED_TWO = 1L;
+    public static final long EXPECTED_THREE = 1L;
+    public static final long EXPECTED_FOUR = 1L;
+    public static final long EXPECTED_FIVE = 0L;
+
     @Autowired
     private BookRepository bookRepository;
 
@@ -33,42 +40,18 @@ class BookRepositoryTest {
     @Test
     void shouldReturnBookCommentCountAndScores() {
         Book expectedBook = entityManager.find(Book.class, BOOK_ID);
-        long expectedOne = entityManager.getEntityManager()
-                .createQuery("select count(bs) from BookScore bs where bs.score = 1 and bs.book = :book", Long.class)
-                .setParameter("book", expectedBook)
-                .getSingleResult();
-        long expectedTwo = entityManager.getEntityManager()
-                .createQuery("select count(bs) from BookScore bs where bs.score = 2 and bs.book = :book", Long.class)
-                .setParameter("book", expectedBook)
-                .getSingleResult();
-        long expectedThree = entityManager.getEntityManager()
-                .createQuery("select count(bs) from BookScore bs where bs.score = 3 and bs.book = :book", Long.class)
-                .setParameter("book", expectedBook)
-                .getSingleResult();
-        long expectedFour = entityManager.getEntityManager()
-                .createQuery("select count(bs) from BookScore bs where bs.score = 4 and bs.book = :book", Long.class)
-                .setParameter("book", expectedBook)
-                .getSingleResult();
-        long expectedFive = entityManager.getEntityManager()
-                .createQuery("select count(bs) from BookScore bs where bs.score = 5 and bs.book = :book", Long.class)
-                .setParameter("book", expectedBook)
-                .getSingleResult();
-        long expectedCommentCount = entityManager.getEntityManager()
-                .createQuery("select count(bc) from BookComment bc where bc.book = :book", Long.class)
-                .setParameter("book", expectedBook)
-                .getSingleResult();
         entityManager.clear();
         SessionFactory sessionFactory = entityManager.getEntityManager().getEntityManagerFactory().unwrap(SessionFactory.class);
         sessionFactory.getStatistics().setStatisticsEnabled(true);
         sessionFactory.getStatistics().clear();
         Optional<BookStatistics> actual = bookRepository.findBookStatistics(expectedBook);
         Assertions.assertThat(actual).isPresent().get().extracting(BookStatistics::getBook).isEqualTo(expectedBook);
-        Assertions.assertThat(actual).isPresent().get().extracting(BookStatistics::getCommentCount).isEqualTo(expectedCommentCount);
-        Assertions.assertThat(actual).isPresent().get().extracting(BookStatistics::getOne).isEqualTo(expectedOne);
-        Assertions.assertThat(actual).isPresent().get().extracting(BookStatistics::getTwo).isEqualTo(expectedTwo);
-        Assertions.assertThat(actual).isPresent().get().extracting(BookStatistics::getThree).isEqualTo(expectedThree);
-        Assertions.assertThat(actual).isPresent().get().extracting(BookStatistics::getFour).isEqualTo(expectedFour);
-        Assertions.assertThat(actual).isPresent().get().extracting(BookStatistics::getFive).isEqualTo(expectedFive);
+        Assertions.assertThat(actual).isPresent().get().extracting(BookStatistics::getCommentCount).isEqualTo(EXPECTED_BOOK_COMMENTS_COUNT);
+        Assertions.assertThat(actual).isPresent().get().extracting(BookStatistics::getOne).isEqualTo(EXPECTED_ONE);
+        Assertions.assertThat(actual).isPresent().get().extracting(BookStatistics::getTwo).isEqualTo(EXPECTED_TWO);
+        Assertions.assertThat(actual).isPresent().get().extracting(BookStatistics::getThree).isEqualTo(EXPECTED_THREE);
+        Assertions.assertThat(actual).isPresent().get().extracting(BookStatistics::getFour).isEqualTo(EXPECTED_FOUR);
+        Assertions.assertThat(actual).isPresent().get().extracting(BookStatistics::getFive).isEqualTo(EXPECTED_FIVE);
         Assertions.assertThat(sessionFactory.getStatistics().getPrepareStatementCount()).isEqualTo(EXPECTED_QUERY_COUNT);
     }
 
