@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: jdbc:postgresql:library
+    username: postgres
+    password: postgres
+    initialization-mode: always
+  jpa:
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  liquibase:
+    enabled: true
+  shell:
+    interactive:
+      enabled: true
