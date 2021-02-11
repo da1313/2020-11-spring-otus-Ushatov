@@ -1,7 +1,7 @@
 package org.course.listeners;
 
 import org.assertj.core.api.Assertions;
-import org.course.changelog.InitTestData;
+import org.course.changelog.TestDataInitializer;
 import org.course.domain.Book;
 import org.course.domain.Comment;
 import org.course.domain.Info;
@@ -21,7 +21,7 @@ import org.springframework.test.annotation.DirtiesContext;
 @DisplayName("Class CommentMongoEventListener")
 @DataMongoTest(excludeAutoConfiguration = EmbeddedMongoAutoConfiguration.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@Import({EmbeddedMongoConfig.class, InitTestData.class, CommentMongoEventListener.class})
+@Import({EmbeddedMongoConfig.class, TestDataInitializer.class, CommentMongoEventListener.class})
 class CommentMongoEventListenerTest {
 
     public static final String NEW_COMMENT = "NEW_COMMENT";
@@ -44,7 +44,7 @@ class CommentMongoEventListenerTest {
 
         Book actual = mongoOperations.findById(book.getId(), Book.class);
 
-        Assertions.assertThat(actual).extracting(Book::getInfo).extracting(Info::getCount).isEqualTo(book.getInfo().getCount() + 1);
+        Assertions.assertThat(actual).extracting(Book::getInfo).extracting(Info::getCommentCount).isEqualTo(book.getInfo().getCommentCount() + 1);
 
     }
 }

@@ -1,7 +1,7 @@
 package org.course.listeners;
 
 import org.assertj.core.api.Assertions;
-import org.course.changelog.InitTestData;
+import org.course.changelog.TestDataInitializer;
 import org.course.domain.Comment;
 import org.course.domain.Score;
 import org.course.domain.User;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @DisplayName("Class UserMongoListener")
 @DataMongoTest(excludeAutoConfiguration = EmbeddedMongoAutoConfiguration.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@Import({EmbeddedMongoConfig.class, InitTestData.class, UserMongoListener.class})
+@Import({EmbeddedMongoConfig.class, TestDataInitializer.class, UserMongoListener.class})
 class UserMongoListenerTest {
 
     @Autowired

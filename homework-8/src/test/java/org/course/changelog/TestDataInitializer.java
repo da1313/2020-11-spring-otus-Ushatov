@@ -4,13 +4,15 @@ import com.github.cloudyrock.mongock.ChangeLog;
 import com.github.cloudyrock.mongock.ChangeSet;
 import com.github.cloudyrock.mongock.driver.mongodb.springdata.v3.decorator.impl.MongockTemplate;
 import com.mongodb.client.MongoDatabase;
+import lombok.Data;
 import org.course.domain.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @ChangeLog
-public class InitData {
+@Data
+public class TestDataInitializer {
 
     @ChangeSet(order = "000", id = "dropDb", author = "author", runAlways = true)
     public void dropDb(MongoDatabase mongoDatabase){
@@ -19,6 +21,14 @@ public class InitData {
 
     @ChangeSet(order = "001", id = "addData", author = "author", runAlways = true)
     public void addData(MongockTemplate mongockTemplate){
+
+        //|book|author|genres   |comments|scores|
+        //|B0  |A0    |G0,G1    |3       |5,4,5 |
+        //|B1  |A1    |G0,G1,G2 |2       |3,3,3 |
+        //|B2  |A2    |G1       |1       |5,2,1 |
+        //|B3  |A0    |G0,G2    |0       |      |
+        //|B4  |A2    |G1,G2    |0       |      |
+        //|B5  |A1    |G2       |0       |      |
 
         List<Author> authorList = new ArrayList<>();
         List<Genre> genreList = new ArrayList<>();
@@ -97,6 +107,5 @@ public class InitData {
         mongockTemplate.save(score);
 
     }
-
 
 }

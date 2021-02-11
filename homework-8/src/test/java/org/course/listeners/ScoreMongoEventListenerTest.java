@@ -1,12 +1,13 @@
 package org.course.listeners;
 
 import org.assertj.core.api.Assertions;
-import org.course.changelog.InitTestData;
+import org.course.changelog.TestDataInitializer;
 import org.course.domain.Book;
 import org.course.domain.Info;
 import org.course.domain.Score;
 import org.course.domain.User;
 import org.course.repository.ScoreRepository;
+import org.course.service.UpdateScoreHandlerServiceImpl;
 import org.course.testconfig.EmbeddedMongoConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,7 +21,7 @@ import org.springframework.test.annotation.DirtiesContext;
 @DisplayName("Class ScoreMongoEventListener")
 @DataMongoTest(excludeAutoConfiguration = EmbeddedMongoAutoConfiguration.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@Import({EmbeddedMongoConfig.class, InitTestData.class, ScoreMongoEventListener.class})
+@Import({EmbeddedMongoConfig.class, TestDataInitializer.class, ScoreMongoEventListener.class, UpdateScoreHandlerServiceImpl.class})
 class ScoreMongoEventListenerTest {
 
     public static final int SCORE_VALUE = 5;
@@ -43,7 +44,9 @@ class ScoreMongoEventListenerTest {
 
         Book actual = mongoOperations.findById(book.getId(), Book.class);
 
-        Assertions.assertThat(actual).extracting(Book::getInfo).extracting(Info::getFive).isEqualTo(book.getInfo().getFive() + 1);
+        Assertions.assertThat(actual)
+                .extracting(Book::getInfo)
+                .extracting(Info::getScoreFiveCount).isEqualTo(book.getInfo().getScoreFiveCount() + 1);
 
     }
 

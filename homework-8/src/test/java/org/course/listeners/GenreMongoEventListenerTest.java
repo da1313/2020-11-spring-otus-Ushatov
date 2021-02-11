@@ -1,7 +1,7 @@
 package org.course.listeners;
 
 import org.assertj.core.api.Assertions;
-import org.course.changelog.InitTestData;
+import org.course.changelog.TestDataInitializer;
 import org.course.domain.Book;
 import org.course.domain.Genre;
 import org.course.repository.GenreRepository;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @DisplayName("Class GenreMongoEventListener")
 @DataMongoTest(excludeAutoConfiguration = EmbeddedMongoAutoConfiguration.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@Import({EmbeddedMongoConfig.class, InitTestData.class, GenreMongoEventListener.class})
+@Import({EmbeddedMongoConfig.class, TestDataInitializer.class, GenreMongoEventListener.class})
 class GenreMongoEventListenerTest {
 
     public static final String NEW_GENRE_NAME = "NEW_GENRE_NAME";

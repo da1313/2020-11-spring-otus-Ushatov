@@ -1,7 +1,7 @@
 package org.course.repository;
 
 import org.assertj.core.api.Assertions;
-import org.course.changelog.InitTestData;
+import org.course.changelog.TestDataInitializer;
 import org.course.domain.Book;
 import org.course.domain.Score;
 import org.course.domain.User;
@@ -21,7 +21,7 @@ import java.util.List;
 @DisplayName("Class ScoreRepository")
 @DataMongoTest(excludeAutoConfiguration = EmbeddedMongoAutoConfiguration.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@Import({EmbeddedMongoConfig.class, InitTestData.class})
+@Import({EmbeddedMongoConfig.class, TestDataInitializer.class})
 class ScoreRepositoryTest {
 
     @Autowired

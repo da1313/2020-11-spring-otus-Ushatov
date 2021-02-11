@@ -70,4 +70,53 @@ public class BookRepositoryCustomImpl implements BookRepositoryCustom {
                 , new Update().pull("genres", genre), Book.class);
 
     }
+
+    @Override
+    public void increaseCommentCountById(String bookId){
+
+        mongoOperations.updateFirst(Query.query(Criteria.where("id").is(bookId)),
+                new Update().inc("info.commentCount", 1), Book.class);
+
+    }
+
+    @Override
+    public void increaseScoreOneCountById(String bookId){
+
+        mongoOperations.updateFirst(Query.query(Criteria.where("id").is(bookId)),
+                new Update().inc("info.scoreOneCount", 1), Book.class);
+
+    }
+
+    @Override
+    public void increaseScoreTwoCountById(String bookId){
+
+        mongoOperations.updateFirst(Query.query(Criteria.where("id").is(bookId)),
+                new Update().inc("info.scoreTwoCount", 1), Book.class);
+
+    }
+
+    @Override
+    public void increaseScoreThreeCountById(String bookId){
+
+        mongoOperations.updateFirst(Query.query(Criteria.where("id").is(bookId)),
+                new Update().inc("info.scoreThreeCount", 1), Book.class);
+
+    }
+
+    @Override
+    public void increaseScoreFourCountById(String bookId){
+
+        mongoOperations.updateFirst(Query.query(Criteria.where("id").is(bookId)),
+                new Update().inc("info.scoreFourCount", 1), Book.class);
+
+    }
+
+    @Override
+    public void increaseScoreFiveCountById(String bookId){
+
+        mongoOperations.updateFirst(Query.query(Criteria.where("id").is(bookId)),
+                new Update().inc("info.scoreFiveCount", 1), Book.class);
+
+    }
+
 }

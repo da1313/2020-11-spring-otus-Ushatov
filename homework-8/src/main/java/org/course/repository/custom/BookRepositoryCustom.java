@@ -18,4 +18,16 @@ public interface BookRepositoryCustom {
 
     void removeGenre(Book book, Genre genre);
 
+    void increaseCommentCountById(String bookId);
+
+    void increaseScoreOneCountById(String bookId);
+
+    void increaseScoreTwoCountById(String bookId);
+
+    void increaseScoreThreeCountById(String bookId);
+
+    void increaseScoreFourCountById(String bookId);
+
+    void increaseScoreFiveCountById(String bookId);
+
 }

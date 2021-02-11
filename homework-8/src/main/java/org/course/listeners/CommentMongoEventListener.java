@@ -19,14 +19,7 @@ public class CommentMongoEventListener extends AbstractMongoEventListener<Commen
 
         Comment comment = event.getSource();
 
-        Book book = bookRepository.findById(comment.getBook().getId())
-                .orElseThrow(() -> new IllegalArgumentException("Book whit id " + comment.getBook().getId() + " not found!"));
-
-        book.getInfo().setCount(book.getInfo().getCount() + 1);
-
-        book.getInfo().calculate();
-
-        bookRepository.save(book);
+        bookRepository.increaseCommentCountById(comment.getBook().getId());
 
     }
 

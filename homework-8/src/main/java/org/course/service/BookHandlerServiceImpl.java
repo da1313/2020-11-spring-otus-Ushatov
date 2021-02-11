@@ -46,6 +46,7 @@ public class BookHandlerServiceImpl implements BookHandlerService {
 
     }
 
+    @Transactional
     @Override
     public String readBook(String id, int page, int size){
 
@@ -70,13 +71,13 @@ public class BookHandlerServiceImpl implements BookHandlerService {
                 book.getTitle(),
                 format(book.getAuthor()),
                 book.getGenres(),
-                book.getInfo().getCount(),
-                book.getInfo().getOne(),
-                book.getInfo().getTwo(),
-                book.getInfo().getThree(),
-                book.getInfo().getFour(),
-                book.getInfo().getFive(),
-                book.getInfo().getAvg());
+                book.getInfo().getCommentCount(),
+                book.getInfo().getScoreOneCount(),
+                book.getInfo().getScoreTwoCount(),
+                book.getInfo().getScoreThreeCount(),
+                book.getInfo().getScoreFourCount(),
+                book.getInfo().getScoreFiveCount(),
+                book.getInfo().getAvgScore());
 
         bookTable.addRule();
 
@@ -123,7 +124,7 @@ public class BookHandlerServiceImpl implements BookHandlerService {
                     book.getTitle(),
                     format(book.getAuthor()),
                     book.getGenres(),
-                    book.getInfo().getAvg());
+                    book.getInfo().getAvgScore());
             table.addRule();
 
         }

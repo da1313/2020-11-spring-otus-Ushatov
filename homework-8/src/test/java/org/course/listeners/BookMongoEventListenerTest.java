@@ -1,7 +1,7 @@
 package org.course.listeners;
 
 import org.assertj.core.api.Assertions;
-import org.course.changelog.InitTestData;
+import org.course.changelog.TestDataInitializer;
 import org.course.domain.*;
 import org.course.repository.BookRepository;
 import org.course.testconfig.EmbeddedMongoConfig;
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @DisplayName("Class BookMongoEventListener")
 @DataMongoTest(excludeAutoConfiguration = EmbeddedMongoAutoConfiguration.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@Import({EmbeddedMongoConfig.class, InitTestData.class, BookMongoEventListener.class})
+@Import({EmbeddedMongoConfig.class, TestDataInitializer.class, BookMongoEventListener.class})
 class BookMongoEventListenerTest {
 
     public static final String NEW_AUTHOR = "NEW_AUTHOR";
@@ -79,6 +79,5 @@ class BookMongoEventListenerTest {
         Assertions.assertThat(scoreListAfterDelete).doesNotContainAnyElementsOf(bookScores);
 
     }
-
 
 }

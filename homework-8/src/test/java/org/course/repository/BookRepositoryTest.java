@@ -1,10 +1,11 @@
 package org.course.repository;
 
 import org.assertj.core.api.Assertions;
-import org.course.changelog.InitTestData;
+import org.course.changelog.TestDataInitializer;
 import org.course.domain.Author;
 import org.course.domain.Book;
 import org.course.domain.Genre;
+import org.course.domain.Info;
 import org.course.testconfig.EmbeddedMongoConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,8 +22,7 @@ import java.util.stream.Collectors;
 
 @DataMongoTest(excludeAutoConfiguration = EmbeddedMongoAutoConfiguration.class)
 @DisplayName("Class BookRepository")
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@Import({EmbeddedMongoConfig.class, InitTestData.class})
+@Import({EmbeddedMongoConfig.class, TestDataInitializer.class})
 class BookRepositoryTest {
 
     public static final String AUTHOR_NAME = "TEST";
@@ -36,7 +36,7 @@ class BookRepositoryTest {
     private BookRepository bookRepository;
 
 
-
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void shouldDeleteAuthorFromAllBookByAuthorId() {
 
@@ -156,6 +156,90 @@ class BookRepositoryTest {
         Book actual = mongoOperations.findById(book.getId(), Book.class);
 
         Assertions.assertThat(actual).extracting(Book::getGenres).matches(genres -> !genres.contains(genre));
+
+    }
+
+    @Test
+    void shouldIncreaseCommentCountByBookId() {
+
+        Book book = mongoOperations.findAll(Book.class).get(0);
+
+        bookRepository.increaseCommentCountById(book.getId());
+
+        Book actual = mongoOperations.findById(book.getId(), Book.class);
+
+        Assertions.assertThat(actual).extracting(Book::getInfo).extracting(Info::getCommentCount)
+                .isEqualTo(book.getInfo().getCommentCount() + 1);
+
+    }
+
+    @Test
+    void shouldIncreaseScoreOneCountByBookId(){
+
+        Book book = mongoOperations.findAll(Book.class).get(0);
+
+        bookRepository.increaseScoreOneCountById(book.getId());
+
+        Book actual = mongoOperations.findById(book.getId(), Book.class);
+
+        Assertions.assertThat(actual).extracting(Book::getInfo).extracting(Info::getScoreOneCount)
+                .isEqualTo(book.getInfo().getScoreOneCount() + 1);
+
+    }
+
+    @Test
+    void shouldIncreaseScoreTwoCountByBookId(){
+
+        Book book = mongoOperations.findAll(Book.class).get(0);
+
+        bookRepository.increaseScoreTwoCountById(book.getId());
+
+        Book actual = mongoOperations.findById(book.getId(), Book.class);
+
+        Assertions.assertThat(actual).extracting(Book::getInfo).extracting(Info::getScoreTwoCount)
+                .isEqualTo(book.getInfo().getScoreTwoCount() + 1);
+
+    }
+
+    @Test
+    void shouldIncreaseScoreThreeCountByBookId(){
+
+        Book book = mongoOperations.findAll(Book.class).get(0);
+
+        bookRepository.increaseScoreThreeCountById(book.getId());
+
+        Book actual = mongoOperations.findById(book.getId(), Book.class);
+
+        Assertions.assertThat(actual).extracting(Book::getInfo).extracting(Info::getScoreThreeCount)
+                .isEqualTo(book.getInfo().getScoreThreeCount() + 1);
+
+    }
+
+    @Test
+    void shouldIncreaseScoreFourCountByBookId(){
+
+        Book book = mongoOperations.findAll(Book.class).get(0);
+
+        bookRepository.increaseScoreFourCountById(book.getId());
+
+        Book actual = mongoOperations.findById(book.getId(), Book.class);
+
+        Assertions.assertThat(actual).extracting(Book::getInfo).extracting(Info::getScoreFourCount)
+                .isEqualTo(book.getInfo().getScoreFourCount() + 1);
+
+    }
+
+    @Test
+    void shouldIncreaseScoreFiveCountByBookId(){
+
+        Book book = mongoOperations.findAll(Book.class).get(0);
+
+        bookRepository.increaseScoreFiveCountById(book.getId());
+
+        Book actual = mongoOperations.findById(book.getId(), Book.class);
+
+        Assertions.assertThat(actual).extracting(Book::getInfo).extracting(Info::getScoreFiveCount)
+                .isEqualTo(book.getInfo().getScoreFiveCount() + 1);
 
     }
 

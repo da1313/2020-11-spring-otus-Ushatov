@@ -1,11 +1,10 @@
 package org.course.listeners;
 
 import org.assertj.core.api.Assertions;
-import org.course.changelog.InitTestData;
+import org.course.changelog.TestDataInitializer;
 import org.course.domain.Author;
 import org.course.domain.Book;
 import org.course.repository.AuthorRepository;
-import org.course.repository.BookRepository;
 import org.course.testconfig.EmbeddedMongoConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,7 +22,7 @@ import java.util.stream.Collectors;
 @DisplayName("Class AuthorMongoEventListener")
 @DataMongoTest(excludeAutoConfiguration = EmbeddedMongoAutoConfiguration.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@Import({EmbeddedMongoConfig.class, InitTestData.class, AuthorMongoEventListener.class})
+@Import({EmbeddedMongoConfig.class, TestDataInitializer.class, AuthorMongoEventListener.class})
 class AuthorMongoEventListenerTest {
 
     public static final String NEW_AUTHOR_NAME = "NEW_AUTHOR_NAME";

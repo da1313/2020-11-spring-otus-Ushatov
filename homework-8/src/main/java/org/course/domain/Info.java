@@ -5,22 +5,30 @@ import lombok.Data;
 @Data
 public class Info {
 
-    private int one;
+    private int scoreOneCount;
 
-    private int two;
+    private int scoreTwoCount;
 
-    private int three;
+    private int scoreThreeCount;
 
-    private int four;
+    private int scoreFourCount;
 
-    private int five;
+    private int scoreFiveCount;
 
-    private double avg;
+    private int commentCount;
 
-    private int count;
+    public double getAvgScore(){
 
-    public void calculate(){
-        avg = ((double)(one + two * 2 + three * 3 + four * 4 + five * 5)) / (one + two + three + four + five);
+        int scoreSum = scoreOneCount + scoreTwoCount + scoreThreeCount + scoreFourCount + scoreFiveCount;
+
+        double scoreSumWithWeight = scoreOneCount + scoreTwoCount * 2 + scoreThreeCount * 3 + scoreFourCount * 4 + scoreFiveCount * 5;
+
+        if (scoreSum == 0) {
+            return 0;
+        }
+
+        return scoreSumWithWeight / scoreSum;
+
     }
 
 }
