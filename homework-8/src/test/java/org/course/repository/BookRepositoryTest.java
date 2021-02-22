@@ -2,10 +2,7 @@ package org.course.repository;
 
 import org.assertj.core.api.Assertions;
 import org.course.changelog.TestDataInitializer;
-import org.course.domain.Author;
-import org.course.domain.Book;
-import org.course.domain.Genre;
-import org.course.domain.Info;
+import org.course.domain.*;
 import org.course.testconfig.EmbeddedMongoConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -174,11 +171,11 @@ class BookRepositoryTest {
     }
 
     @Test
-    void shouldIncreaseScoreOneCountByBookId(){
+    void shouldIncreaseScoreByBookIdAndScoreNumberCaseOne() {
 
         Book book = mongoOperations.findAll(Book.class).get(0);
 
-        bookRepository.increaseScoreOneCountById(book.getId());
+        bookRepository.increaseScoreCount(book.getId(), ScoreNumber.SCORE_ONE);
 
         Book actual = mongoOperations.findById(book.getId(), Book.class);
 
@@ -188,11 +185,11 @@ class BookRepositoryTest {
     }
 
     @Test
-    void shouldIncreaseScoreTwoCountByBookId(){
+    void shouldIncreaseScoreByBookIdAndScoreNumberCaseOTwo() {
 
         Book book = mongoOperations.findAll(Book.class).get(0);
 
-        bookRepository.increaseScoreTwoCountById(book.getId());
+        bookRepository.increaseScoreCount(book.getId(), ScoreNumber.SCORE_TWO);
 
         Book actual = mongoOperations.findById(book.getId(), Book.class);
 
@@ -202,11 +199,11 @@ class BookRepositoryTest {
     }
 
     @Test
-    void shouldIncreaseScoreThreeCountByBookId(){
+    void shouldIncreaseScoreByBookIdAndScoreNumberCaseThree() {
 
         Book book = mongoOperations.findAll(Book.class).get(0);
 
-        bookRepository.increaseScoreThreeCountById(book.getId());
+        bookRepository.increaseScoreCount(book.getId(), ScoreNumber.SCORE_THREE);
 
         Book actual = mongoOperations.findById(book.getId(), Book.class);
 
@@ -216,11 +213,11 @@ class BookRepositoryTest {
     }
 
     @Test
-    void shouldIncreaseScoreFourCountByBookId(){
+    void shouldIncreaseScoreByBookIdAndScoreNumberCaseFour() {
 
         Book book = mongoOperations.findAll(Book.class).get(0);
 
-        bookRepository.increaseScoreFourCountById(book.getId());
+        bookRepository.increaseScoreCount(book.getId(), ScoreNumber.SCORE_FOUR);
 
         Book actual = mongoOperations.findById(book.getId(), Book.class);
 
@@ -230,11 +227,11 @@ class BookRepositoryTest {
     }
 
     @Test
-    void shouldIncreaseScoreFiveCountByBookId(){
+    void shouldIncreaseScoreByBookIdAndScoreNumberCaseFive() {
 
         Book book = mongoOperations.findAll(Book.class).get(0);
 
-        bookRepository.increaseScoreFiveCountById(book.getId());
+        bookRepository.increaseScoreCount(book.getId(), ScoreNumber.SCORE_FIVE);
 
         Book actual = mongoOperations.findById(book.getId(), Book.class);
 

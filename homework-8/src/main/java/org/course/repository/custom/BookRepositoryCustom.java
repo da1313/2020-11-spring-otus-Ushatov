@@ -3,6 +3,7 @@ package org.course.repository.custom;
 import org.course.domain.Author;
 import org.course.domain.Book;
 import org.course.domain.Genre;
+import org.course.domain.ScoreNumber;
 
 public interface BookRepositoryCustom {
 
@@ -20,14 +21,6 @@ public interface BookRepositoryCustom {
 
     void increaseCommentCountById(String bookId);
 
-    void increaseScoreOneCountById(String bookId);
-
-    void increaseScoreTwoCountById(String bookId);
-
-    void increaseScoreThreeCountById(String bookId);
-
-    void increaseScoreFourCountById(String bookId);
-
-    void increaseScoreFiveCountById(String bookId);
+    void increaseScoreCount(String bookId, ScoreNumber scoreNumber);
 
 }

@@ -2,6 +2,7 @@ package org.course.listeners;
 
 import lombok.AllArgsConstructor;
 import org.course.domain.Score;
+import org.course.domain.ScoreNumber;
 import org.course.service.intefaces.UpdateScoreHandlerService;
 import org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventListener;
 import org.springframework.data.mongodb.core.mapping.event.AfterSaveEvent;
@@ -18,7 +19,7 @@ public class ScoreMongoEventListener extends AbstractMongoEventListener<Score> {
 
         Score score = event.getSource();
 
-        updateScoreHandler.updateScore(score.getBook().getId(), score.getValue());
+        updateScoreHandler.updateScore(score.getBook().getId(), ScoreNumber.of(score.getValue()));
 
     }
 

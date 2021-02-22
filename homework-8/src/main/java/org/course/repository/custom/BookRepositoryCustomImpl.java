@@ -5,10 +5,14 @@ import org.bson.types.ObjectId;
 import org.course.domain.Author;
 import org.course.domain.Book;
 import org.course.domain.Genre;
+import org.course.domain.ScoreNumber;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 @AllArgsConstructor
@@ -80,42 +84,17 @@ public class BookRepositoryCustomImpl implements BookRepositoryCustom {
     }
 
     @Override
-    public void increaseScoreOneCountById(String bookId){
+    public void increaseScoreCount(String bookId, ScoreNumber scoreNumber) {
+
+        Map<ScoreNumber, String> fieldMap = new HashMap<>();
+        fieldMap.put(ScoreNumber.SCORE_ONE, "info.scoreOneCount");
+        fieldMap.put(ScoreNumber.SCORE_TWO, "info.scoreTwoCount");
+        fieldMap.put(ScoreNumber.SCORE_THREE, "info.scoreThreeCount");
+        fieldMap.put(ScoreNumber.SCORE_FOUR, "info.scoreFourCount");
+        fieldMap.put(ScoreNumber.SCORE_FIVE, "info.scoreFiveCount");
 
         mongoOperations.updateFirst(Query.query(Criteria.where("id").is(bookId)),
-                new Update().inc("info.scoreOneCount", 1), Book.class);
-
-    }
-
-    @Override
-    public void increaseScoreTwoCountById(String bookId){
-
-        mongoOperations.updateFirst(Query.query(Criteria.where("id").is(bookId)),
-                new Update().inc("info.scoreTwoCount", 1), Book.class);
-
-    }
-
-    @Override
-    public void increaseScoreThreeCountById(String bookId){
-
-        mongoOperations.updateFirst(Query.query(Criteria.where("id").is(bookId)),
-                new Update().inc("info.scoreThreeCount", 1), Book.class);
-
-    }
-
-    @Override
-    public void increaseScoreFourCountById(String bookId){
-
-        mongoOperations.updateFirst(Query.query(Criteria.where("id").is(bookId)),
-                new Update().inc("info.scoreFourCount", 1), Book.class);
-
-    }
-
-    @Override
-    public void increaseScoreFiveCountById(String bookId){
-
-        mongoOperations.updateFirst(Query.query(Criteria.where("id").is(bookId)),
-                new Update().inc("info.scoreFiveCount", 1), Book.class);
+                new Update().inc(fieldMap.get(scoreNumber), 1), Book.class);
 
     }
 
