@@ -1,0 +1,5 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/01-2021-02-10-create-shema.sql
+  - include:
+      file: db/changelog/03-2021-02-10-add-test-data.sql
