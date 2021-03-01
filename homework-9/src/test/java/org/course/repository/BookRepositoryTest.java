@@ -13,6 +13,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.PageRequest;
 
 import javax.persistence.criteria.CriteriaQuery;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,9 +24,10 @@ import java.util.stream.Collectors;
 class BookRepositoryTest {
 
     public static final int OVERFLOW_TEST_DATA_SIZE = 100;
-    public static final int EXPECTED_QUERY_COUNT = 1;
+    public static final int EXPECTED_QUERY_COUNT_TWO = 2;
     public static final String QUERY_STRING = "x";
     public static final long BOOK_ID = 1L;
+    public static final int EXPECTED_QUERY_COUNT_ONE = 1;
 
     @Autowired
     private BookRepository bookRepository;
@@ -57,7 +60,7 @@ class BookRepositoryTest {
         actual.forEach(b -> System.out.println(b.getAuthor() + "*" + b.getGenres()));
 
         Assertions.assertThat(actual).containsExactlyElementsOf(booksWithGenre);
-        Assertions.assertThat(sessionFactory.getStatistics().getPrepareStatementCount()).isEqualTo(EXPECTED_QUERY_COUNT);
+        Assertions.assertThat(sessionFactory.getStatistics().getPrepareStatementCount()).isEqualTo(EXPECTED_QUERY_COUNT_TWO);
     }
 
     @Test
@@ -82,7 +85,7 @@ class BookRepositoryTest {
         actual.forEach(b -> System.out.println(b.getAuthor() + "*" + b.getGenres()));
 
         Assertions.assertThat(actual).containsExactlyElementsOf(booksWithQueryString);
-        Assertions.assertThat(sessionFactory.getStatistics().getPrepareStatementCount()).isEqualTo(EXPECTED_QUERY_COUNT);
+        Assertions.assertThat(sessionFactory.getStatistics().getPrepareStatementCount()).isEqualTo(EXPECTED_QUERY_COUNT_TWO);
     }
 
     @Test
@@ -94,7 +97,9 @@ class BookRepositoryTest {
         List<Book> bookList = testEntityManager.getEntityManager().createQuery(query.select(query.from(Book.class))).getResultList();
 
         List<Book> booksSortedByAvgScore = bookList.stream().filter(b -> b.getGenres().contains(genre))
-                .sorted((b1, b2) -> (int) (b2.getBookInfo().getAvgScore() - b1.getBookInfo().getAvgScore())).collect(Collectors.toList());
+                .sorted(Comparator.comparingDouble(b -> b.getBookInfo().getAvgScore())).collect(Collectors.toList());
+
+        Collections.reverse(booksSortedByAvgScore);
 
         booksSortedByAvgScore.forEach(b -> System.out.println(b.getAuthor() + "*" + b.getGenres()));
 
@@ -109,7 +114,7 @@ class BookRepositoryTest {
         actual.forEach(b -> System.out.println(b.getAuthor() + "*" + b.getGenres()));
 
         Assertions.assertThat(actual).containsExactlyElementsOf(booksSortedByAvgScore);
-        Assertions.assertThat(sessionFactory.getStatistics().getPrepareStatementCount()).isEqualTo(EXPECTED_QUERY_COUNT);
+        Assertions.assertThat(sessionFactory.getStatistics().getPrepareStatementCount()).isEqualTo(EXPECTED_QUERY_COUNT_TWO);
     }
 
     @Test
@@ -119,9 +124,11 @@ class BookRepositoryTest {
         List<Book> bookList = testEntityManager.getEntityManager().createQuery(query.select(query.from(Book.class))).getResultList();
 
         List<Book> booksSortedByAvgScore = bookList.stream()
-                .sorted((b1, b2) -> (int) (b2.getBookInfo().getAvgScore() - b1.getBookInfo().getAvgScore())).collect(Collectors.toList());
+                .sorted(Comparator.comparingDouble(b -> b.getBookInfo().getAvgScore())).collect(Collectors.toList());
 
-        booksSortedByAvgScore.forEach(b -> System.out.println(b.getAuthor() + "*" + b.getGenres()));
+        Collections.reverse(booksSortedByAvgScore);
+
+        booksSortedByAvgScore.forEach(b -> System.out.println(b.getId() + "*" + b.getAuthor() + "*" + b.getGenres()));
 
         testEntityManager.clear();
 
@@ -131,10 +138,10 @@ class BookRepositoryTest {
 
         List<Book> actual = bookRepository.findAllSortedByAvgScore(PageRequest.of(0, OVERFLOW_TEST_DATA_SIZE)).toList();
 
-        actual.forEach(b -> System.out.println(b.getAuthor() + "*" + b.getGenres()));
+        actual.forEach(b -> System.out.println(b.getId() + "*" + b.getAuthor() + "*" + b.getGenres()));
 
         Assertions.assertThat(actual).containsExactlyElementsOf(booksSortedByAvgScore);
-        Assertions.assertThat(sessionFactory.getStatistics().getPrepareStatementCount()).isEqualTo(EXPECTED_QUERY_COUNT);
+        Assertions.assertThat(sessionFactory.getStatistics().getPrepareStatementCount()).isEqualTo(EXPECTED_QUERY_COUNT_TWO);
 
     }
 
@@ -154,7 +161,7 @@ class BookRepositoryTest {
         Book actual = bookRepository.findByIdEager(BOOK_ID).orElseThrow();
 
         Assertions.assertThat(actual).isEqualTo(book);
-        Assertions.assertThat(sessionFactory.getStatistics().getPrepareStatementCount()).isEqualTo(EXPECTED_QUERY_COUNT);
+        Assertions.assertThat(sessionFactory.getStatistics().getPrepareStatementCount()).isEqualTo(EXPECTED_QUERY_COUNT_ONE);
     }
 
     @Test
@@ -176,7 +183,7 @@ class BookRepositoryTest {
         actual.forEach(b -> System.out.println(b.getAuthor() + "*" + b.getGenres()));
 
         Assertions.assertThat(actual).containsExactlyElementsOf(bookList);
-        Assertions.assertThat(sessionFactory.getStatistics().getPrepareStatementCount()).isEqualTo(EXPECTED_QUERY_COUNT);
+        Assertions.assertThat(sessionFactory.getStatistics().getPrepareStatementCount()).isEqualTo(EXPECTED_QUERY_COUNT_TWO);
 
     }
 }

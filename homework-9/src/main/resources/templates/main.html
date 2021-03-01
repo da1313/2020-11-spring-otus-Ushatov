@@ -121,21 +121,28 @@
             <li th:text="'Score: ' + ${#numbers.formatDecimal(book.bookInfo.getAvgScore(),1,1)}">Score</li>
             <li th:text="'Comments: ' + ${book.bookInfo.commentCount}">Comments</li>
           </ul>
-          <div style="text-align: center;"><a href="#" style="margin-right: 0.5rem;" th:href="@{'/book/delete/' + ${book.id}}">delete</a><a href="#" th:href="@{'/book/update/' + ${book.id}}">update</a></div>
+          <div style="text-align: center;">
+            <form style="display: inline;" th:action="@{/book/delete/{bookId}(bookId=${book.id})}" method="post">
+              <input type="submit" value="delete">
+            </form>
+            <form style="display: inline;" th:action="@{/book/update/{bookId}(bookId=${book.id})}" method="get">
+              <input type="submit" value="update">
+            </form>
+          </div>
         </div>
       </div>
       <div class="sort-container">
         <div>
           <ul>
-            <li><a href="#" th:href="@{/(genreId=*{genreId}, sort=new)}">New</a></li>
-            <li><a href="#" th:href="@{/(genreId=*{genreId}, sort=best)}">Best</a></li>
-            <li><a href="#" th:href="@{/(genreId=*{genreId}, sort=popular)}">Popular</a></li>
+            <li><a href="#" th:href="@{/(action=*{action}, sort=NEW)}">New</a></li>
+            <li><a href="#" th:href="@{/(action=*{action}, sort=BEST)}">Best</a></li>
+            <li><a href="#" th:href="@{/(action=*{action}, sort=POPULAR)}">Popular</a></li>
           </ul>
         </div>
         <div>
           <form th:action="@{/}" method="get">
             <input name="query" type="text"/>
-            <input name="isSearch" type="hidden" value="true">
+            <input name="action" type="hidden" value="SEARCH">
             <button type="submit">Search</button>
           </form>
         </div>
@@ -143,16 +150,16 @@
       <div class="genre-container">
         <div style="text-align: center;"><h4>Genres</h4></div>
         <ul>
-          <li><a href="#" th:href="@{/(genreId=0)}">View all</a></li>
+          <li><a href="#" th:href="@{/(action=BY_ALL)}">View all</a></li>
           <li th:each="genre : ${genres}">
-            <a href="#" th:href="@{/(genreId=${genre.id})}" th:text="${genre.name}">genre name</a>
+            <a href="#" th:href="@{/(action=BY_GENRE, genreId=${genre.id})}" th:text="${genre.name}">genre name</a>
           </li>
         </ul>
       </div>
       <div class="paging-container">
         <ul>
-          <li><a href="#" th:href="@{/(genreId=*{genreId}, sort=*{sort}, query=*{query}, isSearch=*{isSearch}, nextPage=*{currentPage - 1})}">Previous</a></li>
-          <li><a href="#" th:href="@{/(genreId=*{genreId}, sort=*{sort}, query=*{query}, isSearch=*{isSearch}, nextPage=*{currentPage + 1})}">Next</a></li>
+          <li><a href="#" th:href="@{/(action=*{action}, direction=PREVIOUS)}">Previous</a></li>
+          <li><a href="#" th:href="@{/(action=*{action}, direction=NEXT)}">Next</a></li>
         </ul>
       </div>
       <div class="add-book">

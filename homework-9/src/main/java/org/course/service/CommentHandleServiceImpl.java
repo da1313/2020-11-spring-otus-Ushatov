@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.course.domain.Book;
 import org.course.domain.Comment;
 import org.course.domain.User;
+import org.course.exceptions.EntityNotFoundException;
 import org.course.repository.BookRepository;
 import org.course.repository.CommentRepository;
 import org.course.repository.UserRepository;
@@ -24,8 +25,10 @@ public class CommentHandleServiceImpl implements CommentHandleService {
     @Override
     @Transactional
     public void createComment(long id, String text) {
-        Book book = bookRepository.findById(id).orElseThrow();
-        User user = userRepository.findById(1L).orElseThrow();
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Book with id " + id + " not found!"));
+        User user = userRepository.findById(1L)
+                .orElseThrow(() -> new EntityNotFoundException("Book with id " + 1L + " not found!"));
         Comment comment = new Comment(0, text, book, user);
         commentRepository.save(comment);
     }

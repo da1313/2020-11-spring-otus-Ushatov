@@ -11,13 +11,12 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import javax.persistence.criteria.CriteriaQuery;
-
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 
-@DisplayName("Class BookRepository")
+@DisplayName("Class GenreRepository")
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class GenreRepositoryTest {

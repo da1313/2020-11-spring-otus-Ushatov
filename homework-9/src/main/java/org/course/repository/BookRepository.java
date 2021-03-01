@@ -12,15 +12,15 @@ import java.util.Optional;
 
 public interface BookRepository extends JpaRepository<Book, Long> {
 
-    @EntityGraph(attributePaths = {"author", "genres"}, type = EntityGraph.EntityGraphType.LOAD)
+    @EntityGraph(attributePaths = {"author"}, type = EntityGraph.EntityGraphType.LOAD)
     @Query("select b from Book b join b.genres g where g = ?1")
     Page<Book> findAllByGenre(Genre genre, Pageable pageable);
 
-    @EntityGraph(attributePaths = {"author", "genres"}, type = EntityGraph.EntityGraphType.LOAD)
+    @EntityGraph(attributePaths = {"author"}, type = EntityGraph.EntityGraphType.LOAD)
     @Query("select b from Book b where b.title like %?1% or b.author.name like %?1%")
     Page<Book> findAllByQuery(String query, Pageable pageable);
 
-    @EntityGraph(attributePaths = {"author", "genres"}, type = EntityGraph.EntityGraphType.LOAD)
+    @EntityGraph(attributePaths = {"author"}, type = EntityGraph.EntityGraphType.LOAD)
     @Query("select b from Book b join b.genres g where g = ?1 order by (" +
                 " case when (b.bookInfo.scoreOneCount + b.bookInfo.scoreTwoCount + b.bookInfo.scoreThreeCount + b.bookInfo.scoreFourCount + b.bookInfo.scoreFiveCount) = 0" +
                     " then 0" +
@@ -32,7 +32,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
             ") desc")
     Page<Book> findAllByGenreSortedByAvgScore(Genre genre, Pageable pageable);
 
-    @EntityGraph(attributePaths = {"author", "genres"}, type = EntityGraph.EntityGraphType.LOAD)
+    @EntityGraph(attributePaths = {"author"}, type = EntityGraph.EntityGraphType.LOAD)
     @Query("select b from Book b order by (" +
             " case when (b.bookInfo.scoreOneCount + b.bookInfo.scoreTwoCount + b.bookInfo.scoreThreeCount + b.bookInfo.scoreFourCount + b.bookInfo.scoreFiveCount) = 0" +
             " then 0" +
@@ -44,11 +44,11 @@ public interface BookRepository extends JpaRepository<Book, Long> {
             ") desc")
     Page<Book> findAllSortedByAvgScore(Pageable pageable);
 
-    @EntityGraph(attributePaths = {"author", "genres"}, type = EntityGraph.EntityGraphType.LOAD)
+    @EntityGraph(attributePaths = {"author"}, type = EntityGraph.EntityGraphType.LOAD)
     @Query("select b from Book b where b.id = ?1")
     Optional<Book> findByIdEager(long id);
 
-    @EntityGraph(attributePaths = {"author", "genres"}, type = EntityGraph.EntityGraphType.LOAD)
+    @EntityGraph(attributePaths = {"author"}, type = EntityGraph.EntityGraphType.LOAD)
     @Query("select b from Book b")
     Page<Book> findAllEager(Pageable pageable);
 

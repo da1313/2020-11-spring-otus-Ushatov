@@ -130,15 +130,15 @@
         <div class="sort-container">
             <div>
               <ul>
-                <li><a href="#" th:href="@{/(sort=new)}">New</a></li>
-                <li><a href="#" th:href="@{/(sort=best)}">Best</a></li>
-                <li><a href="#" th:href="@{/(sort=popular)}">Popular</a></li>
+                <li><a href="#" th:href="@{/(action=BY_ALL, sort=new)}">New</a></li>
+                <li><a href="#" th:href="@{/(action=BY_ALL, sort=best)}">Best</a></li>
+                <li><a href="#" th:href="@{/(action=BY_ALL, sort=popular)}">Popular</a></li>
               </ul>
             </div>
             <div>
               <form th:action="@{/}" method="get">
                 <input name="query" type="text"/>
-                <input name="isSearch" type="hidden" value="true">
+                <input name="action" type="hidden" value="SEARCH">
                 <button type="submit">Search</button>
               </form>
             </div>

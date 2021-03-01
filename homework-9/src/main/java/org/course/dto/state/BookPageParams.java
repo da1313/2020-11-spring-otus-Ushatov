@@ -7,7 +7,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class BookPageParams {
 
-    private String sort;
+//    private String sort;
 
     private int currentPage;
 

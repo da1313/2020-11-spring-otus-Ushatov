@@ -1,13 +1,22 @@
 package org.course.controllers;
 
 import org.course.domain.*;
-import org.course.dto.request.BookRequest;
-import org.course.service.interfaces.BookHandleService;
+import org.course.dto.attributes.BookPageAttributes;
+import org.course.dto.attributes.CreateBookPageAttributes;
+import org.course.dto.attributes.MainPageAttributes;
+import org.course.dto.attributes.UpdateBookPageAttributes;
+import org.course.dto.request.MainPageRequest;
+import org.course.dto.state.BookPageParams;
+import org.course.dto.state.MainPageParams;
+import org.course.service.MainPageHandlerController;
+import org.course.service.interfaces.*;
+import org.course.utility.MainPageBehavior;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -19,19 +28,38 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-@DisplayName("Class BookController")
-@WebMvcTest(BookController.class)
-class BookControllerTest {
+import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("Class PageController")
+@WebMvcTest(PageController.class)
+class PageControllerTest {
+
+    public static final int GENRE_ID = 0;
+    public static final boolean IS_SEARCH = false;
     public static final int BOOK_ID = 1;
+    public static final int CURRENT_PAGE = 0;
+    public static final int TOTAL_PAGES = 5;
+    public static final int NEXT_PAGE = 0;
+    public static final String QUERY = "";
+    public static final MainPageParams PREVIOUS_MAIN_PARAMS = null;
+    public static final BookPageParams PREVIOUS_BOOK_PARAMS = null;
 
     @Autowired
     private MockMvc mvc;
 
     @MockBean
-    private BookHandleService bookHandleService;
+    @Qualifier("mainPageHandlerController")
+    private MainPageHandler mainPageHandler;
+
+    @MockBean
+    private BookPageService bookPageService;
+
+    @MockBean
+    private CreateBookPageService createBookPageService;
+
+    @MockBean
+    private UpdateBookPageService updateBookPageService;
 
     private final List<Book> bookList = new ArrayList<>();
     private final List<Author> authorList = new ArrayList<>() ;
@@ -93,57 +121,77 @@ class BookControllerTest {
     }
 
     @Test
-    void shouldInvokeCreateBookMethodAndRedirectToMainPage() throws Exception {
+    void shouldReturnMainViewAndSetAttributes() throws Exception {
 
-        Book book = bookList.get(0);
+        MainPageParams mainPageParams = new MainPageParams();
 
-        List<Long> genreIds = book.getGenres().stream().map(Genre::getId).collect(Collectors.toList());
+        MainPageAttributes mainPageAttributes = new MainPageAttributes(mainPageParams, bookList, genreList);
 
-        BookRequest bookRequest = new BookRequest(book.getTitle(), genreIds, book.getAuthor().getId(), book.getDescription());
+        MainPageRequest request = new MainPageRequest();
+        MainPageParams pageParams = null;
 
-        mvc.perform(MockMvcRequestBuilders.post("/book/create")
-                .param("title", book.getTitle())
-                .param("genreIds", String.valueOf(genreIds.get(0)))
-                .param("genreIds", String.valueOf(genreIds.get(1)))
-                .param("authorId", String.valueOf(book.getAuthor().getId()))
-                .param("description", book.getDescription()))
-                .andExpect(MockMvcResultMatchers.redirectedUrl("/"));
+        Mockito.when(mainPageHandler.getMainPageAttributes(request, pageParams))
+                .thenReturn(mainPageAttributes);
 
-        Mockito.verify(bookHandleService, Mockito.times(1))
-                .createBook(bookRequest);
+        mvc.perform(MockMvcRequestBuilders.get("/"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.view().name("main"))
+                .andExpect(MockMvcResultMatchers.model()
+                        .attribute("mainPageParams", mainPageParams))
+                .andExpect(MockMvcResultMatchers.model().attribute("books", bookList))
+                .andExpect(MockMvcResultMatchers.model().attribute("genres", genreList));
 
     }
 
     @Test
-    void shouldInvokeUpdateBookMethodAndRedirectToMainPage() throws Exception {
+    void shouldReturnBookViewAndSetAttributes() throws Exception {
+
+        BookPageParams bookPageParams = new BookPageParams(CURRENT_PAGE, TOTAL_PAGES);
+
+        BookPageAttributes bookPageAttributes = new BookPageAttributes(bookList.get(0), bookList.get(0).getComments(), bookPageParams);
+
+        Mockito.when(bookPageService.getBookPageAttributes(BOOK_ID, NEXT_PAGE, PREVIOUS_BOOK_PARAMS)).thenReturn(bookPageAttributes);
+
+        mvc.perform(MockMvcRequestBuilders.get("/" + BOOK_ID))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.view().name("book"))
+                .andExpect(MockMvcResultMatchers.model().attribute("bookPageParams", bookPageParams))
+                .andExpect(MockMvcResultMatchers.model().attribute("book", bookList.get(0)))
+                .andExpect(MockMvcResultMatchers.model().attribute("comments", bookList.get(0).getComments()));
+
+    }
+
+    @Test
+    void shouldReturnCreateViewAndSetAttributes() throws Exception {
+
+        CreateBookPageAttributes attributes = new CreateBookPageAttributes(genreList, authorList);
+
+        Mockito.when(createBookPageService.getCreateBookPageAttributes()).thenReturn(attributes);
+
+        mvc.perform(MockMvcRequestBuilders.get("/book/create"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.view().name("create"))
+                .andExpect(MockMvcResultMatchers.model().attribute("authors", authorList))
+                .andExpect(MockMvcResultMatchers.model().attribute("genres", genreList));
+
+    }
+
+    @Test
+    void shouldReturnUpdateViewAndSetAttributes() throws Exception {
 
         Book book = bookList.get(0);
 
-        List<Long> genreIds = List.of(1L, 2L);
+        UpdateBookPageAttributes attributes = new UpdateBookPageAttributes(genreList, authorList, book);
 
-        BookRequest bookRequest = new BookRequest(book.getTitle(), genreIds, book.getAuthor().getId(), book.getDescription());
+        Mockito.when(updateBookPageService.getUpdateBookAttributes(book.getId())).thenReturn(attributes);
 
-        mvc.perform(MockMvcRequestBuilders.post("/book/update/" + book.getId())
-                .param("title", book.getTitle())
-                .param("genreIds", String.valueOf(genreIds.get(0)))
-                .param("genreIds", String.valueOf(genreIds.get(1)))
-                .param("authorId", String.valueOf(book.getAuthor().getId()))
-                .param("description", book.getDescription()))
-                .andExpect(MockMvcResultMatchers.redirectedUrl("/"));
-
-        Mockito.verify(bookHandleService, Mockito.times(1))
-                .updateBook(book.getId(), bookRequest);
+        mvc.perform(MockMvcRequestBuilders.get("/book/update/" + book.getId()))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.view().name("update"))
+                .andExpect(MockMvcResultMatchers.model().attribute("book", book))
+                .andExpect(MockMvcResultMatchers.model().attribute("authors", authorList))
+                .andExpect(MockMvcResultMatchers.model().attribute("genres", genreList));
 
     }
 
-
-    @Test
-    void shouldInvokeDeleteMethodAndRedirectToMainPage() throws Exception {
-
-        mvc.perform(MockMvcRequestBuilders.post("/book/delete/" + BOOK_ID))
-                .andExpect(MockMvcResultMatchers.redirectedUrl("/"));
-
-        Mockito.verify(bookHandleService, Mockito.times(1)).deleteBook(BOOK_ID);
-
-    }
 }
