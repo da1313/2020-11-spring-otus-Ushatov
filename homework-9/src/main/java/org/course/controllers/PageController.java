@@ -1,5 +1,6 @@
 package org.course.controllers;
 
+import lombok.AllArgsConstructor;
 import org.course.dto.attributes.BookPageAttributes;
 import org.course.dto.attributes.CreateBookPageAttributes;
 import org.course.dto.attributes.MainPageAttributes;
@@ -7,14 +8,11 @@ import org.course.dto.attributes.UpdateBookPageAttributes;
 import org.course.dto.request.MainPageRequest;
 import org.course.dto.state.BookPageParams;
 import org.course.dto.state.MainPageParams;
-import org.course.exceptions.EntityNotFoundException;
-import org.course.service.BookPageServiceImpl;
-import org.course.service.UpdateBookPageServiceImpl;
+import org.course.service.MainPageServiceImpl;
 import org.course.service.interfaces.BookPageService;
 import org.course.service.interfaces.CreateBookPageService;
-import org.course.service.interfaces.MainPageHandler;
+import org.course.service.interfaces.MainPageService;
 import org.course.service.interfaces.UpdateBookPageService;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,28 +22,19 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 
 @SessionAttributes({PageController.MAIN_PAGE_PARAMS, PageController.BOOK_PAGE_PARAMS})
 @Controller
+@AllArgsConstructor
 public class PageController {
 
     public static final String MAIN_PAGE_PARAMS = "mainPageParams";
     public static final String BOOK_PAGE_PARAMS = "bookPageParams";
 
-    private final MainPageHandler mainPageService;
+    private final MainPageService mainPageService;
 
     private final BookPageService bookPageService;
 
     private final CreateBookPageService createBookPageService;
 
     private final UpdateBookPageService updateBookPageService;
-
-    public PageController(@Qualifier("mainPageHandlerController") MainPageHandler mainPageService,
-                          BookPageService bookPageService,
-                          CreateBookPageService createBookPageService,
-                          UpdateBookPageService updateBookPageService) {
-        this.mainPageService = mainPageService;
-        this.bookPageService = bookPageService;
-        this.createBookPageService = createBookPageService;
-        this.updateBookPageService = updateBookPageService;
-    }
 
     @GetMapping("/")
     public String getMainView(MainPageRequest request, Model model){
@@ -84,11 +73,6 @@ public class PageController {
         model.addAttribute("genres", updateBookAttributes.getGenreList());
         model.addAttribute("book", updateBookAttributes.getBook());
         return "update";
-    }
-
-    @GetMapping("/exe")
-    private String getExe(){
-        throw new EntityNotFoundException("XXXXX");
     }
 
 }

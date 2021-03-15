@@ -1,6 +1,6 @@
-package org.course.service;
+package org.course.service.handlers;
 
-import org.course.service.interfaces.PagingAndSortingHandler;
+import org.course.service.interfaces.handlers.PagingAndSortingHandler;
 import org.course.utility.BookSort;
 import org.course.utility.PageUtils;
 import org.course.utility.Route;

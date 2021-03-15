@@ -1,7 +1,8 @@
 package org.course.service;
 
 import org.assertj.core.api.Assertions;
-import org.course.service.interfaces.PagingAndSortingHandler;
+import org.course.service.handlers.PagingAndSortingHandlerImpl;
+import org.course.service.interfaces.handlers.PagingAndSortingHandler;
 import org.course.utility.Route;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

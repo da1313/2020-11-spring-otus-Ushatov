@@ -1,4 +1,4 @@
-package org.course.service;
+package org.course.service.handlers;
 
 import lombok.AllArgsConstructor;
 import org.course.configurations.AppConfig;
@@ -9,14 +9,17 @@ import org.course.dto.request.MainPageRequest;
 import org.course.dto.state.MainPageParams;
 import org.course.repository.BookRepository;
 import org.course.repository.GenreRepository;
-import org.course.service.interfaces.MainPageHandler;
-import org.course.service.interfaces.PagingAndSortingHandler;
+import org.course.service.interfaces.handlers.MainPageHandler;
+import org.course.service.interfaces.handlers.PagingAndSortingHandler;
+import org.course.utility.MainPageBehavior;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 
+@Service
 @AllArgsConstructor
 public class MainPageHandlerByQuery implements MainPageHandler {
 
@@ -46,5 +49,10 @@ public class MainPageHandlerByQuery implements MainPageHandler {
 
         return new MainPageAttributes(params, bookPage.toList(), genreList);
 
+    }
+
+    @Override
+    public MainPageBehavior getBehaviour() {
+        return MainPageBehavior.SEARCH;
     }
 }

@@ -8,9 +8,8 @@ import org.course.dto.attributes.UpdateBookPageAttributes;
 import org.course.dto.request.MainPageRequest;
 import org.course.dto.state.BookPageParams;
 import org.course.dto.state.MainPageParams;
-import org.course.service.MainPageHandlerController;
 import org.course.service.interfaces.*;
-import org.course.utility.MainPageBehavior;
+import org.course.service.interfaces.handlers.MainPageHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,8 +27,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Class PageController")
 @WebMvcTest(PageController.class)

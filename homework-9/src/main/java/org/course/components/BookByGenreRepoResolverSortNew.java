@@ -6,11 +6,14 @@ import org.course.configurations.AppConfig;
 import org.course.domain.Book;
 import org.course.domain.Genre;
 import org.course.repository.BookRepository;
+import org.course.utility.BookSort;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Component;
 
 
+@Component
 @AllArgsConstructor
 public class BookByGenreRepoResolverSortNew implements BookByGenreRepoResolver {
 
@@ -21,5 +24,10 @@ public class BookByGenreRepoResolverSortNew implements BookByGenreRepoResolver {
     @Override
     public Page<Book> getPage(Genre genre, int pageNumber) {
         return bookRepository.findAllByGenre(genre, PageRequest.of(pageNumber, appConfig.getBookPageCount(), Sort.by("time").descending()));
+    }
+
+    @Override
+    public BookSort getSort() {
+        return BookSort.NEW;
     }
 }

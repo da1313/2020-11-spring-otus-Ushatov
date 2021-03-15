@@ -10,8 +10,9 @@ import org.course.dto.attributes.MainPageAttributes;
 import org.course.dto.request.MainPageRequest;
 import org.course.dto.state.MainPageParams;
 import org.course.repository.GenreRepository;
-import org.course.service.interfaces.MainPageHandler;
-import org.course.service.interfaces.PagingAndSortingHandler;
+import org.course.service.handlers.MainPageHandlerByGenre;
+import org.course.service.interfaces.handlers.MainPageHandler;
+import org.course.service.interfaces.handlers.PagingAndSortingHandler;
 import org.course.utility.BookSort;
 import org.course.utility.MainPageBehavior;
 import org.course.utility.Route;
@@ -51,8 +52,7 @@ class MainPageHandlerByGenreTest {
     @Mock
     private BookByGenreRepoResolverSortPopular bookByGenreRepoResolverSortPopular;
 
-    @Mock
-    Map<BookSort, BookByGenreRepoResolver> bookByGenreRepoResolverMap;
+    List<BookByGenreRepoResolver> bookRepoResolverList = new ArrayList<>();
 
     @Mock
     private PagingAndSortingHandler pagingAndSortingHandler;
@@ -114,11 +114,24 @@ class MainPageHandlerByGenreTest {
 
     }
 
+    @BeforeEach
+    private void initRepoHandlers(){
+        bookRepoResolverList.clear();
+
+        Mockito.when(bookByGenreRepoResolverSortNew.getSort()).thenReturn(BookSort.NEW);
+        Mockito.when(bookByGenreRepoResolverSortBest.getSort()).thenReturn(BookSort.BEST);
+        Mockito.when(bookByGenreRepoResolverSortPopular.getSort()).thenReturn(BookSort.POPULAR);
+
+        bookRepoResolverList.add(bookByGenreRepoResolverSortNew);
+        bookRepoResolverList.add(bookByGenreRepoResolverSortBest);
+        bookRepoResolverList.add(bookByGenreRepoResolverSortPopular);
+    }
+
     @Test
     void shouldSetAttributesOnGenreSelect() {
         //first case
         //Create service
-        MainPageHandler handler = new MainPageHandlerByGenre(pagingAndSortingHandler, genreRepository, bookByGenreRepoResolverMap);
+        MainPageHandler handler = new MainPageHandlerByGenre(pagingAndSortingHandler, genreRepository, bookRepoResolverList);
 
         //SetUp expected
         MainPageParams expectedParams = new MainPageParams(MainPageBehavior.BY_GENRE, GENRE_ID, BookSort.NEW, PAGE_NUMBER, BOOK_PAGE_COUNT, null);
@@ -140,7 +153,6 @@ class MainPageHandlerByGenreTest {
         Mockito.when(pagingAndSortingHandler
                 .processSort(request.getDirection(), params.getSort(), request.getSort()))
                 .thenReturn(BookSort.NEW);
-        Mockito.when(bookByGenreRepoResolverMap.get(BookSort.NEW)).thenReturn(bookByGenreRepoResolverSortNew);
         Mockito.when(bookByGenreRepoResolverSortNew.getPage(genreList.get(0), PAGE_NUMBER)).thenReturn(bookPage);
 
         //execute service
@@ -155,7 +167,7 @@ class MainPageHandlerByGenreTest {
     void shouldSetAttributesOnSort() {
         //sort case
         //Create service
-        MainPageHandler handler = new MainPageHandlerByGenre(pagingAndSortingHandler, genreRepository, bookByGenreRepoResolverMap);
+        MainPageHandler handler = new MainPageHandlerByGenre(pagingAndSortingHandler, genreRepository, bookRepoResolverList);
 
         //SetUp expected
         MainPageParams expectedParams = new MainPageParams(MainPageBehavior.BY_GENRE, GENRE_ID, BookSort.BEST, PAGE_NUMBER, BOOK_PAGE_COUNT, null);
@@ -177,7 +189,6 @@ class MainPageHandlerByGenreTest {
         Mockito.when(pagingAndSortingHandler
                 .processSort(request.getDirection(), params.getSort(), request.getSort()))
                 .thenReturn(BookSort.BEST);
-        Mockito.when(bookByGenreRepoResolverMap.get(BookSort.BEST)).thenReturn(bookByGenreRepoResolverSortBest);
         Mockito.when(bookByGenreRepoResolverSortBest.getPage(genreList.get(0), PAGE_NUMBER)).thenReturn(bookPage);
 
         //execute service
@@ -192,7 +203,7 @@ class MainPageHandlerByGenreTest {
     void shouldSetAttributesOnPagingRequest() {
         //paging case
         //Create service
-        MainPageHandler handler = new MainPageHandlerByGenre(pagingAndSortingHandler, genreRepository, bookByGenreRepoResolverMap);
+        MainPageHandler handler = new MainPageHandlerByGenre(pagingAndSortingHandler, genreRepository, bookRepoResolverList);
 
         //SetUp expected
         MainPageParams expectedParams = new MainPageParams(MainPageBehavior.BY_GENRE, GENRE_ID, BookSort.POPULAR, PAGE_NUMBER + 1, BOOK_PAGE_COUNT, null);
@@ -214,7 +225,6 @@ class MainPageHandlerByGenreTest {
         Mockito.when(pagingAndSortingHandler
                 .processSort(request.getDirection(), params.getSort(), request.getSort()))
                 .thenReturn(BookSort.POPULAR);
-        Mockito.when(bookByGenreRepoResolverMap.get(BookSort.POPULAR)).thenReturn(bookByGenreRepoResolverSortPopular);
         Mockito.when(bookByGenreRepoResolverSortPopular.getPage(genreList.get(0), PAGE_NUMBER + 1)).thenReturn(bookPage);
 
         //execute service

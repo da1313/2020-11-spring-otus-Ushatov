@@ -10,8 +10,9 @@ import org.course.dto.attributes.MainPageAttributes;
 import org.course.dto.request.MainPageRequest;
 import org.course.dto.state.MainPageParams;
 import org.course.repository.GenreRepository;
-import org.course.service.interfaces.MainPageHandler;
-import org.course.service.interfaces.PagingAndSortingHandler;
+import org.course.service.handlers.MainPageHandlerByAll;
+import org.course.service.interfaces.handlers.MainPageHandler;
+import org.course.service.interfaces.handlers.PagingAndSortingHandler;
 import org.course.utility.BookSort;
 import org.course.utility.MainPageBehavior;
 import org.course.utility.Route;
@@ -52,8 +53,7 @@ class MainPageHandlerByAllTest {
     @Mock
     private BookRepoResolverSortPopular bookRepoResolverSortPopular;
 
-    @Mock
-    Map<BookSort, BookRepoResolver> bookRepoResolverMap;
+    private final List<BookRepoResolver> bookRepoResolverList = new ArrayList<>();
 
     @Mock
     private PagingAndSortingHandler pagingAndSortingHandler;
@@ -115,11 +115,24 @@ class MainPageHandlerByAllTest {
 
     }
 
+    @BeforeEach
+    private void initRepoHandlers(){
+        bookRepoResolverList.clear();
+
+        Mockito.when(bookRepoResolverSortNew.getSort()).thenReturn(BookSort.NEW);
+        Mockito.when(bookRepoResolverSortBest.getSort()).thenReturn(BookSort.BEST);
+        Mockito.when(bookRepoResolverSortPopular.getSort()).thenReturn(BookSort.POPULAR);
+
+        bookRepoResolverList.add(bookRepoResolverSortPopular);
+        bookRepoResolverList.add(bookRepoResolverSortBest);
+        bookRepoResolverList.add(bookRepoResolverSortNew);
+    }
+
     @Test
     void shouldSetAttributesWhenFirstLoaded() {
         //first visit
         //Create service
-        MainPageHandler handler = new MainPageHandlerByAll(pagingAndSortingHandler, genreRepository, bookRepoResolverMap);
+        MainPageHandler handler = new MainPageHandlerByAll(pagingAndSortingHandler, genreRepository, bookRepoResolverList);
 
         //SetUp expected
         MainPageParams expectedParams = new MainPageParams(MainPageBehavior.BY_ALL, null, BookSort.POPULAR, PAGE_NUMBER, BOOK_PAGE_COUNT, null);
@@ -140,7 +153,7 @@ class MainPageHandlerByAllTest {
         Mockito.when(pagingAndSortingHandler
                 .processSort(request.getDirection(), params.getSort(), request.getSort()))
                 .thenReturn(BookSort.POPULAR);
-        Mockito.when(bookRepoResolverMap.get(BookSort.POPULAR)).thenReturn(bookRepoResolverSortPopular);
+
         Mockito.when(bookRepoResolverSortPopular.getPage(PAGE_NUMBER)).thenReturn(bookPage);
 
         //execute service
@@ -155,7 +168,7 @@ class MainPageHandlerByAllTest {
     void shouldSetAttributesOnSortRequest() {
         //sort case
         //Create service
-        MainPageHandler handler = new MainPageHandlerByAll(pagingAndSortingHandler, genreRepository, bookRepoResolverMap);
+        MainPageHandler handler = new MainPageHandlerByAll(pagingAndSortingHandler, genreRepository, bookRepoResolverList);
 
         //SetUp expected
         MainPageParams expectedParams = new MainPageParams(MainPageBehavior.BY_ALL, null, BookSort.BEST, PAGE_NUMBER, BOOK_PAGE_COUNT, null);
@@ -176,7 +189,6 @@ class MainPageHandlerByAllTest {
         Mockito.when(pagingAndSortingHandler
                 .processSort(request.getDirection(), params.getSort(), request.getSort()))
                 .thenReturn(BookSort.BEST);
-        Mockito.when(bookRepoResolverMap.get(BookSort.BEST)).thenReturn(bookRepoResolverSortBest);
         Mockito.when(bookRepoResolverSortBest.getPage(PAGE_NUMBER)).thenReturn(bookPage);
 
         //execute service
@@ -191,7 +203,7 @@ class MainPageHandlerByAllTest {
     void shouldSetAttributesOnPagingRequest() {
         //paging case
         //Create service
-        MainPageHandler handler = new MainPageHandlerByAll(pagingAndSortingHandler, genreRepository, bookRepoResolverMap);
+        MainPageHandler handler = new MainPageHandlerByAll(pagingAndSortingHandler, genreRepository, bookRepoResolverList);
 
         //SetUp expected
         MainPageParams expectedParams = new MainPageParams(MainPageBehavior.BY_ALL, null, BookSort.POPULAR, PAGE_NUMBER + 1, BOOK_PAGE_COUNT, null);
@@ -212,7 +224,6 @@ class MainPageHandlerByAllTest {
         Mockito.when(pagingAndSortingHandler
                 .processSort(request.getDirection(), params.getSort(), request.getSort()))
                 .thenReturn(BookSort.POPULAR);
-        Mockito.when(bookRepoResolverMap.get(BookSort.POPULAR)).thenReturn(bookRepoResolverSortPopular);
         Mockito.when(bookRepoResolverSortPopular.getPage(PAGE_NUMBER + 1)).thenReturn(bookPage);
 
         //execute service
