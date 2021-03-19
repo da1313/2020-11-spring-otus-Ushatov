@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE
+    username: sa
+    password:
+    driverClassName: org.h2.Driver
+    initialization-mode: always
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  liquibase:
+    enabled: true
