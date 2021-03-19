@@ -1,0 +1,17 @@
+spring:
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: lib
+mongock:
+  change-logs-scan-package:
+    - org.course.changelog
+  enabled: true
+#logging:
+#  level:
+#    org:
+#      mongodb:
+#        driver: DEBUG
+app:
+  init: production

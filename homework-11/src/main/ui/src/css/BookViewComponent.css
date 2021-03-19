@@ -1,0 +1,92 @@
+.book-view-cont{
+    display: flex;
+    justify-content: center;
+}
+
+.book-image-cont{
+    max-width: 18rem;
+    margin: 1rem;
+}
+.book-image-cont img{
+    width: 100%;
+}
+
+.book-view-details-cont{
+    margin: 1rem;
+}
+
+.book-view-details-cont > div{
+    margin-top: 1rem;
+}
+
+.comment-cont{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.score-cont{
+    margin-left: 1.5rem;
+}
+
+progress {
+    background: none;
+}
+progress::-webkit-progress-bar {
+    background: none;
+    border: solid 1px rgb(221, 221, 221);
+    border-radius: 10px;
+
+}
+progress::-webkit-progress-value {
+    background-color: rgb(38, 136, 21);
+    border-radius: 10px;
+}
+progress::-moz-progress-bar {
+    /* background-color: black; */
+}
+
+.comment{
+    display: flex;
+    flex-direction: column;
+    margin: 0.25rem;
+}
+
+.comment textarea{
+    margin: 0;
+    padding: 0;
+    width: 30rem;
+    resize: none;
+    border: none;
+}
+
+.add-comment{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0.5rem;
+}
+
+.add-comment textarea{
+    margin: 0;
+    padding: 0;
+    height: 5rem;
+    width: 30rem;
+    resize: none;
+}
+
+.author-cont{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.ava-cont{
+    width: 2rem;
+    margin-right: 0.5rem;
+}
+
+.ava-cont img{
+    width: 100%;
+    border-radius: 20px;
+}
