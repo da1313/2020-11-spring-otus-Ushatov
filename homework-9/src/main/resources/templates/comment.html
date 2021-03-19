@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+<div class="comment-container" th:fragment="comments-block">
+    <h4 style="padding: 0.5rem; margin: 0;" th:text="'Comments ' + ${book.bookInfo.commentCount} + ' Score ' + ${#numbers.formatDecimal(book.bookInfo.getAvgScore(),1,1)}">Comments 234 Score 4.7</h4>
+    <div class="comment-item" th:each="comment : ${comments}">
+        <div class="comment-item-image"><img src="/images/test-image.jpg"/></div>
+        <div class="comment-item-name"><div><span th:text="${comment.user.name}">Name</span></div></div>
+        <div class="comment-item-text" th:text="${comment.text}">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Dolores dolore aut vel quidem in culpa. Debitis alias nobis excepturi deleniti fugiat voluptas facilis. Molestiae maiores, dicta ducimus est quidem corrupti!</div>
+    </div>
+</div>
+<div class="comment-container-empty" th:fragment="comments-block-empty">
+    <h4 style="padding: 0.5rem; margin: 0;">There are no comments</h4>
+</div>
+<div class="paging-container" th:fragment="comments-pagination">
+    <ul>
+        <li><a href="#" th:href="'/'+${book.id}+'/?nextPage='+*{currentPage-1}">Previous</a></li>
+        <li><a href="#" th:href="'/'+${book.id}+'/?nextPage='+*{currentPage+1}">Next</a></li>
+    </ul>
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Update book</title>
+  </head>
+  <style>
+    body{
+      background: rgb(255, 255, 255);
+      margin: 0;
+      padding: 0;
+      color: black;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    .some-container{
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+        grid-template-rows: 80px 50px 1fr 80px;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top:0;
+        left: 0;
+        gap: 0.5rem;
+    }
+    .edit-cont{
+        grid-column: 3/5;
+        grid-row: 3/4;
+    }
+    header{
+        grid-column: 1/7;
+        grid-row: 1/2;
+        background: rgb(111, 219, 138);
+    }
+    footer{
+        grid-column: 1/7;
+        grid-row:4/5;
+        background: rgb(111, 219, 138);
+    }
+    .form-cont{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto auto auto auto;
+        align-items: center;
+    }
+    .title-desc{
+        grid-column: 1/2;
+        grid-row: 1/2;
+        justify-self: flex-end;
+        margin: 0.5rem;
+    }
+    .title-input{
+        grid-column: 2/3;
+        grid-row: 1/2;
+        margin: 0.5rem;
+    }
+    .author-desc{
+        grid-column: 1/2;
+        grid-row: 2/3;
+        justify-self: flex-end;
+        margin: 0.5rem;
+    }
+    .author-input{
+        grid-column: 2/3;
+        grid-row: 2/3;
+        margin: 0.5rem;
+        margin-right: 0;
+    }
+    .genre-desc{
+        grid-column: 1/2;
+        grid-row: 3/4;
+        justify-self: flex-end;
+        margin: 0.5rem;
+    }
+    .genre-input{
+        grid-column: 2/3;
+        grid-row: 3/4;
+        margin: 0.5rem;
+        overflow-y: scroll;
+    }
+    .submit-input{
+        grid-column: 1/3;
+        grid-row: 5/6;
+        justify-self: center;
+        margin: 0.5rem;
+    }
+    .desc-input{
+        grid-column: 1/3;
+        grid-row: 4/5;
+        margin: 0.5rem;
+        text-align: center;
+    }
+    input[type="text"]{
+        width: 100%;
+    }
+    select{
+        width: 100%;
+    }
+    .sort-container{
+      grid-column: 2 / 6;
+      grid-row: 2 / 3;
+      display: flex;
+      justify-content:space-between;
+      align-items: center;
+      background: rgb(241, 241, 241);
+      padding: 1.5rem;
+    }
+    .sort-container input{
+        width: auto;
+    }
+    .sort-container ul{
+      margin: 0.25rem;
+      padding: 0px;
+      /* border: solid 1px; */
+    }
+    .sort-container ul li{
+      display: inline;
+      margin-right: 1rem;
+      border: solid 1px;
+      padding: 0.5rem;
+      background: white;
+    }
+  </style>
+  <body>
+    <div class="some-container">
+        <div class="sort-container">
+            <div>
+              <ul>
+                <li><a href="#" th:href="@{/(action=BY_ALL, sort=new)}">New</a></li>
+                <li><a href="#" th:href="@{/(action=BY_ALL, sort=best)}">Best</a></li>
+                <li><a href="#" th:href="@{/(action=BY_ALL, sort=popular)}">Popular</a></li>
+              </ul>
+            </div>
+            <div>
+              <form th:action="@{/}" method="get">
+                <input name="query" type="text"/>
+                <input name="action" type="hidden" value="SEARCH">
+                <button type="submit">Search</button>
+              </form>
+            </div>
+          </div>
+        <div class="edit-cont">
+            <form id="book-edit" method="post" th:action="@{'/book/update/' + *{id}}" th:object="${book}">
+                <div class="form-cont">
+                    <input type="hidden" name="bookId" th:value>
+                    <div class="title-desc">Title</div>
+                    <div class="title-input"><input type="text" name="title" th:value="*{title}"/></div>
+                    <div class="author-desc">Author</div>
+                    <div class="author-input">
+                        <select form="book-edit" name="authorId">
+                            <option th:each="author : ${authors}" th:text="${author.name}" th:value="${author.id}" th:selected="${author.id == book.author.id}">author</option>
+                        </select>
+                    </div>
+                    <div class="genre-desc">Genres</div>
+                    <div class="genre-input">
+                        <div th:each="genre : ${genres}">
+                            <input name="genreList" type="checkbox" th:value="${genre.id}" th:checked="${book.getGenres().contains(genre)}"/>
+                            <span th:text="${genre.name}">genre</span>
+                        </div>
+                    </div>
+                    <div class="desc-input">
+                        <span>Description</span>
+                        <textarea rows="10" style="width:100%; margin:0;resize: none;" wrap="soft" name="description" th:field="*{description}" form="book-edit"></textarea>
+                    </div>
+                    <div class="submit-input">
+                        <input type="submit"/>
+                    </div>
+                </div>  
+            </form>
+        </div>
+            
+        <header style="display: flex; align-items: center; justify-content: center;">
+            <div>
+              <h3 style="margin: 0; padding: 0;">Update book</h3>
+            </div>
+          </header>
+        <footer></footer>
+    </div>
+    
+  </body>
+</html>
