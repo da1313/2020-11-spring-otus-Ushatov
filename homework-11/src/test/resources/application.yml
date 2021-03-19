@@ -1,0 +1,5 @@
+mongock:
+  change-logs-scan-package:
+    - org.course.changelog
+  runner-type: ApplicationRunner
+#  enabled: false
