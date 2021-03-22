@@ -1,7 +1,9 @@
 package org.course.handlers;
 
 import lombok.AllArgsConstructor;
+import org.assertj.core.groups.Tuple;
 import org.course.api.pojo.BookCount;
+import org.course.api.pojo.BookShort;
 import org.course.api.requests.BookListRequest;
 import org.course.api.requests.BookRequest;
 import org.course.api.responces.BookInfoResponse;
@@ -21,7 +23,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 
@@ -37,37 +41,33 @@ public class BookHandlerImpl implements BookHandler {
 
     @Override
     public Mono<ServerResponse> getBooks(ServerRequest request){
-        return getRequest(request).flatMap(r -> Mono.zip(
-                Mono.just(r.getPageSize()),
-                    bookRepository.findAllBookShortAuto(getPageRequest(r)).collectList(),
-                    bookRepository.count()))
-                .map(z -> new BookListResponse(z.getT2(), getTotalPages(z.getT3(), z.getT1())))
-                .flatMap(r -> ServerResponse.ok().bodyValue(r))
-                .onErrorResume(e -> ServerResponse.ok().bodyValue(new ErrorResponse(e.getMessage())));
+        return Mono.just(request).flatMap(this::getRequest).flatMap(r -> {
+                    Mono<List<BookShort>> books = bookRepository.findAllBookShortAuto(getPageRequest(r)).collectList();
+                    Mono<Integer> totalPages = bookRepository.count().map(c -> getTotalPages(c, r.getPageSize()));
+                    return getBooksServerResponse(Mono.zip(books, totalPages));
+                });
     }
 
     @Override
     public Mono<ServerResponse> getBooksByGenre(ServerRequest request){
         return Mono.just(request).flatMap(r -> Mono.zip(getRequest(r), getGenreId(r)))
-                .flatMap(r -> Mono.zip(
-                        Mono.just(r.getT1().getPageSize()),
-                        bookRepository.findAllBookShortByGenre(r.getT2(), getPageRequest(r.getT1())).collectList(),
-                        bookRepository.findCountByGenres(r.getT2()).defaultIfEmpty(new BookCount(0))))
-                .map(z -> new BookListResponse(z.getT2(), getTotalPages(z.getT3().getValue(), z.getT1())))
-                .flatMap(r -> ServerResponse.ok().bodyValue(r))
-                .onErrorResume(e -> ServerResponse.ok().bodyValue(new ErrorResponse(e.getMessage())));
+                .flatMap(z -> {
+                    Mono<List<BookShort>> books = bookRepository.findAllBookShortByGenre(z.getT2(), getPageRequest(z.getT1())).collectList();
+                    Mono<Integer> totalPages = bookRepository.findCountByGenres(z.getT2()).defaultIfEmpty(new BookCount(0))
+                            .map(c -> getTotalPages(c.getValue(), z.getT1().getPageSize()));
+                    return getBooksServerResponse(Mono.zip(books, totalPages));
+                });
     }
 
     @Override
     public Mono<ServerResponse> getBooksByQuery(ServerRequest request){
         return Mono.just(request).flatMap(r -> Mono.zip(getRequest(r), getQuery(r)))
-                .flatMap(r -> Mono.zip(
-                        Mono.just(r.getT1().getPageSize()),
-                        bookRepository.findAllBookShortByQuery(r.getT2(), getPageRequest(r.getT1())).collectList(),
-                        bookRepository.findCountByQuery(r.getT2()).defaultIfEmpty(new BookCount(0))))
-                .map(z -> new BookListResponse(z.getT2(), getTotalPages(z.getT3().getValue(), z.getT1())))
-                .flatMap(r -> ServerResponse.ok().bodyValue(r))
-                .onErrorResume(e -> ServerResponse.ok().bodyValue(new ErrorResponse(e.getMessage())));
+                .flatMap(z -> {
+                    Mono<List<BookShort>> books = bookRepository.findAllBookShortByQuery(z.getT2(), getPageRequest(z.getT1())).collectList();
+                    Mono<Integer> totalPages = bookRepository.findCountByQuery(z.getT2()).defaultIfEmpty(new BookCount(0))
+                            .map(c -> getTotalPages(c.getValue(), z.getT1().getPageSize()));
+                    return getBooksServerResponse(Mono.zip(books, totalPages));
+                });
     }
 
     @Override
@@ -111,12 +111,20 @@ public class BookHandlerImpl implements BookHandler {
                 .flatMap(r -> ServerResponse.ok().bodyValue(r));
     }
 
+    private Mono<ServerResponse> getBooksServerResponse(Mono<Tuple2<List<BookShort>, Integer>> booksAndTotalPages){
+        return booksAndTotalPages.map(z -> new BookListResponse(z.getT1(), z.getT2()))
+                .flatMap(r -> ServerResponse.ok().bodyValue(r))
+                .onErrorResume(e -> ServerResponse.ok().bodyValue(new ErrorResponse(e.getMessage())));
+    }
+
     private Mono<BookListRequest> getRequest(ServerRequest request){
-        return Mono.just(request).flatMap(r -> Mono.zip(
-                Mono.just(Integer.parseInt(request.queryParam("pageNumber").orElseThrow(() -> new NoSuchElementException("Missing query parameter pageNumber")))),
-                Mono.just(Integer.parseInt(request.queryParam("pageSize").orElseThrow(() -> new NoSuchElementException("Missing query parameter pageSize")))),
-                Mono.just(request.queryParam("sort").orElseThrow(() -> new NoSuchElementException("Missing query parameter sort")))))
-                .map(z -> new BookListRequest(z.getT1(), z.getT2(), z.getT3()));
+        int pageNumber = Integer.parseInt(request.queryParam("pageNumber")
+                .orElseThrow(() -> new NoSuchElementException("Missing query parameter pageNumber")));
+        int pageSize = Integer.parseInt(request.queryParam("pageSize")
+                .orElseThrow(() -> new NoSuchElementException("Missing query parameter pageSize")));
+        String sort = request.queryParam("sort")
+                .orElseThrow(() -> new NoSuchElementException("Missing query parameter sort"));
+        return Mono.just(new BookListRequest(pageNumber, pageSize, sort));
     }
 
     private Mono<String> getGenreId(ServerRequest request){
