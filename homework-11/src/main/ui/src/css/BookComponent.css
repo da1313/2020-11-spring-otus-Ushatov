@@ -1,0 +1,40 @@
+.bookCont{
+    width: 15rem;
+    margin: 0.5rem;
+    border: solid;
+    border-width: 1px;
+    border-color: rgb(168, 168, 168);
+    border-radius: 10px;
+}
+
+.bookCont img{
+    width: 100%;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.title{
+    text-align: center;
+    padding: 0.25rem;
+    border-bottom: solid 1px rgb(168, 168, 168);
+}
+
+.edit{
+    padding: 0.25rem;
+    text-align: center;
+    border-top: solid 1px rgb(168, 168, 168);
+}
+
+.edit button {
+    margin-left: 0.5rem;
+}
+
+.bookCont ul{
+    margin: 0.25rem;
+    padding: 0;
+    list-style-type: none;
+}
+
+.bookCont li{
+    margin: 0.25rem;
+}
