@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    url: jdbc:postgresql:lib
+    username: postgres
+    password: postgres
+    initialization-mode: always
+  jpa:
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+#      dialect: org.hibernate.dialect.PostgreSQL10Dialect
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+app:
+  bookPageSize: 8
+  commentPageSize: 3
+  leftOffset: 1
+  rightOffset: 1

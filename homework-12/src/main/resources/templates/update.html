@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Update book</title>
+  </head>
+  <style>
+    body{
+        padding: 0;
+        margin: 0;
+    }
+    input[type=text], select, textarea {
+      width: 100%;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+    input[type=text], select{
+      height: 1.5rem;
+    }
+    .form-i{
+      padding: 0.5rem;
+    }
+    .main-c{
+        max-width: 1024px;
+        margin: auto;
+        display: flex;
+        flex-direction: column;
+    }
+  </style>
+  <body>
+    <header style="height: 70px; background-color: darkgreen; display: flex; justify-content: center; align-items: center;">
+      <div><span style="font-size: 1.5rem; font-weight: bold; color: white;">Book CRUD UI</span></div>
+    </header>
+    <div class="main-c">
+      <div style="padding: 0.5rem; display: flex; flex-direction: row; justify-content: space-between;">
+        <div>
+            <button th:onclick="|window.location.href='@{/books}'|">Books</button>
+            <button th:onclick="|window.location.href='@{/manage}'|">Manage</button>
+        </div>
+        <div>
+            <span style="font-weight: bold; color: blue;" th:text="${email}">Username</span>
+            <button th:onclick="|window.location.href='@{/logout}'|">Logout</button>
+        </div>
+      </div>
+      <div style="width: 400px; align-self: center;">
+        <form method="post" th:action="@{/book/update/{id}(id=*{id})}" th:object="${book}">
+          <div>
+            <input type="hidden" name="bookId" th:value>
+            <div class="form-i">
+              <span>Title</span>
+              <div><input type="text" name="title" th:value="*{title}"/></div>
+            </div>
+            <div class="form-i">
+              <span>Author</span>
+              <div>
+                  <select name="authorId">
+                      <option th:each="author : ${authors}" th:text="${author.name}" th:value="${author.id}" th:selected="${author.id == book.author.id}">author</option>
+                  </select>
+              </div>
+            </div>
+            <div class="form-i">
+              <span>Genres</span>
+              <div>
+                  <div th:each="genre : ${genres}">
+                      <input name="genreIds" type="checkbox" th:value="${genre.id}" th:checked="${book.getGenres().contains(genre)}"/>
+                      <span th:text="${genre.name}">genre</span>
+                  </div>
+              </div>
+            </div>
+            <div class="form-i">
+                <span>Description</span>
+                <textarea rows="10" style="margin:0;resize: none;" wrap="soft" name="description" th:field="*{description}"></textarea>
+            </div>
+            <div class="form-i" style="text-align: center;">
+                <button type="submit">Update</button>
+            </div>
+          </div>  
+        </form>
+      </div>
+    </div>
+    
+    
+  </body>
+</html>

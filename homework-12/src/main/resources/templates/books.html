@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>View books</title>
+</head>
+<style>
+    body{
+        padding: 0;
+        margin: 0;
+    }
+    img{
+        max-width: 100%;
+        max-height: 100%;
+        border-radius: 5px;
+    }
+    .book-c{
+        width: 13rem;
+        height: 20rem; 
+        border: solid 1px rgb(121, 121, 121); 
+        border-radius: 5px; 
+        text-align: center; 
+        min-width: 13rem;
+        margin: 0.5rem;
+    }
+    .a-c{
+        display: flex; 
+        align-items: center;
+        justify-content: center; 
+        height: 12.5rem; 
+        padding: 0.5rem;
+    }
+    .book-info-c{
+        border: solid 1px rgb(216, 216, 216); 
+        margin: 0.5rem;
+        height: 5.5rem;
+        border-radius: 5px;
+    }
+    .book-info-c div{
+        padding: 0.1rem; 
+        text-align: left;
+    }
+    .btn-active{
+        background-color: darkgreen;
+        color: white;
+    }
+    .main-c{
+        max-width: 1024px;
+        margin: auto;
+        display: flex;
+        flex-direction: column;
+    }
+</style>
+<body>
+    <header style="height: 70px; background-color: darkgreen; display: flex; justify-content: center; align-items: center;">
+        <div><span style="font-size: 1.5rem; font-weight: bold; color: white;">Book CRUD UI</span></div>
+    </header>
+    <div class="main-c">
+        <div style="padding: 0.5rem; display: flex; flex-direction: row; justify-content: space-between;">
+            <div>
+                <button th:onclick="|window.location.href='@{/books}'|">Books</button>
+                <button th:onclick="|window.location.href='@{/manage}'|">Manage</button>
+            </div>
+            <div>
+                <span style="font-weight: bold; color: blue;" th:text="${email}">Username</span>
+                <button th:onclick="|window.location.href='@{/logout}'|">Logout</button>
+            </div>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; justify-content: center;">
+            <div th:each="book : ${bookList}" class="book-c">
+                <a class="a-c" th:href="@{/books/{id}(id=${book.id})}"><img src="images/image.jpg"></a>
+                <div class="book-info-c">
+                    <div><span th:text="(${#strings.length(book.title)} > 24)? (${#strings.substring(book.title,0,24)} + '...') : ${book.title}">Pride and Prejudice</span></div>
+                    <div>Author:&nbsp<span th:text="${book.author.name}">Jane Austen</span></div>
+                    <div>Genre:&nbsp<span th:each="genre : ${book.genres}" th:text="${genre.name} + ' '">Romance novel </span></div>
+                    <div style="display: flex; justify-content:space-around; padding: 0;">
+                        <div>Comments&nbsp<span th:text="(${book.info.commentCount} == 0)? ' - ' : ${book.info.commentCount}">5</span></div>
+                        <div>Avg. sore&nbsp<span th:text="(${book.info.avgScore} == 0)? ' - ' : ${#numbers.formatDecimal(book.info.avgScore,1,1)}">2.7</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="display: flex; flex-direction: row; align-self: center;">
+            <div><button th:onclick="|window.location.href='@{/books(page=1)}'|">First</button></div>
+            <div><button th:onclick="|window.location.href='@{/books(page=${page.previousPage})}'|">Previous</button></div>
+            <div th:each="number : ${page.pagesBefore}">
+                <button th:onclick="|window.location.href='@{/books(page=${number})}'|" th:text="${number}">1</button>
+            </div>
+            <div>
+                <button class="btn-active" th:onclick="|window.location.href='@{/books(page=${page.pageNumber})}'|" th:text="${page.pageNumber}">2</button>
+            </div>
+            <div th:each="number : ${page.pagesAfter}">
+                <button th:onclick="|window.location.href='@{/books(page=${number})}'|" th:text="${number}">3</button>
+            </div>
+            <div><button th:onclick="|window.location.href='@{/books(page=${page.nextPage})}'|">Next</button></div>
+            <div><button th:onclick="|window.location.href='@{/books(page=${page.lastPage})}'|">Last</button></div>
+        </div>
+    </div>
+    
+</body>
+</html>

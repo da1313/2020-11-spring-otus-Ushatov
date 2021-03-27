@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login page</title>
+</head>
+<style>
+body{
+padding:0;
+margin:0;
+}
+input {
+padding:0;
+margin:0;
+-webkit-box-sizing: border-box;
+-moz-box-sizing: border-box;
+box-sizing: border-box;
+height: 1.5rem;
+}
+.t-input{
+padding:0.5rem;
+}
+.t-input input{
+width:100%;
+}
+.c-input{
+padding:0.5rem;
+}
+.c-input{
+padding:0.5rem;
+}
+.b-input{
+padding:0.5rem;
+text-align:center;
+}
+.text-block{
+text-align:center;
+padding:0.5rem;
+font-weight: bold;
+font-size: 1.5rem;
+}
+</style>
+<body>
+    <div>
+        <header style="height: 70px; background-color: darkgreen; display: flex; justify-content: center; align-items: center;">
+            <div><span style="font-size: 1.5rem; font-weight: bold; color: white;">Book CRUD UI</span></div>
+        </header>
+        <div style="display:flex;justify-content:center; margin: 1rem;">
+            <div style="width:330px;border: solid 1px; border-radius: 10px;">
+                <form method="POST" th:action="@{/login}">
+                    <div class="text-block">Please sign in</div>
+                    <div>
+                        <div class="t-input">
+                            <input type="email" name="username" placeholder="Email"/>
+                        </div>
+                        <div class="t-input">
+                            <input type="password" name="password" placeholder="Password"/>
+                        </div>
+                        <div class="c-input">
+                            <input type="checkbox" name="remember-me"><span style="padding-left:0.5rem">Remember-me?</span>
+                        </div>
+                        <div class="b-input">
+                            <button type="submit">Sign in</button>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
