@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage books</title>
+</head>
+<style>
+    body{
+        padding: 0;
+        margin: 0;
+    }
+    table{
+        border: solid 1px;
+        border-collapse: collapse;
+        width: 100%;
+    }
+    th, td {
+        border: solid 1px;
+        padding: 0.5rem;
+    }
+    select {
+        width: 100%;
+    }
+    .btn-active{
+        background-color: darkgreen;
+        color: white;
+    }
+    tr:nth-child(even){background-color: #f2f2f2;}
+    .main-c{
+        max-width: 1024px;
+        margin: auto;
+    }
+</style>
+<body>
+    <header style="height: 70px; background-color: darkgreen; display: flex; justify-content: center; align-items: center;">
+        <div><span style="font-size: 1.5rem; font-weight: bold; color: white;">Book CRUD UI</span></div>
+    </header>
+    <div class="main-c">
+        <div>
+            <div style="padding: 0.5rem; display: flex; flex-direction: row; justify-content: space-between;">
+                <div>
+                    <button th:onclick="|window.location.href='@{/book/create}'|">Add new</button>
+                    <button th:onclick="|window.location.href='@{/books}'|">User view</button>
+                </div>
+                <div>
+                    <form method="post" th:action="@{/logout}">
+                        <span style="font-weight: bold; color: blue;" th:text="${email}">Username</span>
+                        <button type="submit">Logout</button>
+                    </form>
+                </div>
+            </div>
+            <table>
+                <tr>
+                    <th>id</th>
+                    <th>Title</th>
+                    <th>Time</th>
+                    <th>Author</th>
+                    <th>Genres</th>
+                    <th>Manage</th>
+                </tr>
+                <tr th:each="book : ${bookList}">
+                    <td th:text="${book.id}">id</td>
+                    <td th:text="${book.title}">Title</td>
+                    <td th:text="${#temporals.format(book.time, 'dd-MM-yyyy')}">Time</td>
+                    <td th:text="${book.author.name}">Author</td>
+                    <td>
+                        <select>
+                            <option th:each="genre : ${book.genres}" th:text="${genre.name}">Genre1</option>
+                        </select>
+                    </td>
+                    <td>
+                        <div style="display: flex; justify-content: center;">
+                            <div style="margin-right: 0.5rem;">
+                                <form method="GET" th:action="@{/book/update/{id}(id=${book.id})}">
+                                    <button type="submit">Update</button>
+                                </form>
+                            </div>
+                            <div>
+                                <form method="POST" th:action="@{/book/delete/{id}(id=${book.id})}">
+                                    <button type="submit">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+        
+                    </td>
+                </tr>
+            </table>
+            <div style="display: flex; justify-content: center;">
+                <div style="display: flex; flex-direction: row; margin: 1rem;">
+                    <div><button th:onclick="|window.location.href='@{/manage(page=1)}'|">First</button></div>
+                    <div><button th:onclick="|window.location.href='@{/manage(page=${page.previousPage})}'|">Previous</button></div>
+                    <div th:each="number : ${page.pagesBefore}">
+                        <button th:onclick="|window.location.href='@{/manage(page=${number})}'|" th:text="${number}">1</button>
+                    </div>
+                    <div>
+                        <button class="btn-active" th:onclick="|window.location.href='@{/manage(page=${page.pageNumber})}'|" th:text="${page.pageNumber}">2</button>
+                    </div>
+                    <div th:each="number : ${page.pagesAfter}">
+                        <button th:onclick="|window.location.href='@{/manage(page=${number})}'|" th:text="${number}">3</button>
+                    </div>
+                    <div><button th:onclick="|window.location.href='@{/manage(page=${page.nextPage})}'|">Next</button></div>
+                    <div><button th:onclick="|window.location.href='@{/manage(page=${page.lastPage})}'|">Last</button></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</body>
+</html>

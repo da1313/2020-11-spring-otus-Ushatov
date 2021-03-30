@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+
+<html lang="en"  xmlns:th="http://www.thymeleaf.org">
+    <style>
+        body{
+            padding: 0;
+            margin: 0;
+        }
+        input[type=text], select, textarea {
+          width: 100%;
+          -webkit-box-sizing: border-box;
+          -moz-box-sizing: border-box;
+          box-sizing: border-box;
+        }
+        input[type=text], select{
+          height: 1.5rem;
+        }
+        .form-i{
+          padding: 0.5rem;
+        }
+        .main-c{
+            max-width: 1024px;
+            margin: auto;
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Error page</title>
+    </head>
+    <body>
+        <header style="height: 70px; background-color: darkgreen; display: flex; justify-content: center; align-items: center;">
+            <div><span style="font-size: 1.5rem; font-weight: bold; color: white;">Book CRUD UI</span></div>
+        </header>
+        <div class="main-c">
+            <div style="padding: 0.5rem; display: flex; flex-direction: row; justify-content: space-between;">
+                <div>
+                    <button th:onclick="|window.location.href='@{/books}'|">Books</button>
+                    <button th:onclick="|window.location.href='@{/manage}'|">Manage</button>
+                </div>
+                <div>
+                    <form method="post" th:action="@{/logout}">
+                        <span style="font-weight: bold; color: blue;" th:text="${email}">Username</span>
+                        <button type="submit">Logout</button>
+                    </form>
+                </div>
+            </div>
+            <div style="align-self:center;">
+                <h1>Something went wrong!</h1>
+            </div>
+        </div>
+    </body>
+</html>

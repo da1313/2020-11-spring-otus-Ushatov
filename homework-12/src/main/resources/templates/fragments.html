@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <body>
+        <div th:fragment="comments-fragment-empty" style="display: flex; justify-content: center; margin: 0.5rem;">
+            <div>There are no comments</div>
+        </div>
+        <div th:fragment="comments-fragment" style="width: 38rem; align-self: center; display: flex; flex-direction: column; margin: 0.5rem;">
+            <div>Comments&nbsp;<span style="color: blue;" th:text="(${book.info.commentCount} == 0)? ' - ' : ${book.info.commentCount}">1</span></div>
+            <div th:each="comment : ${comments}" style="margin: 0.25rem;">
+                <div style="display: flex; justify-content: space-between;">
+                    <div style="display: flex; align-items: center;">
+                        <div><img style="width: 2.5rem; height: 2.5rem; border-radius: 1.75rem;" src="/images/image.jpg"/></div>
+                        <div style="margin-left: 0.5rem;"><span th:text="' ' + ${comment.user.firstName}">Username</span></div>
+                    </div>
+                    <div style="display: flex; align-items: flex-end;">
+                        <div>
+                            <span th:text="${#temporals.format(comment.time, 'dd-MM-yyyy HH:mm')}"></span>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin: 0.5rem;">
+                    <div th:text="${comment.text}"></div>
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: row; align-self: center; margin: 0.5rem;">
+                <div><button th:onclick="|window.location.href='@{/books/{id}/(id=${book.id},page=1)}'|">First</button></div>
+                <div><button th:onclick="|window.location.href='@{/books/{id}/(id=${book.id},page=${page.previousPage})}'|">Previous</button></div>
+                <div th:each="number : ${page.pagesBefore}">
+                    <button th:onclick="|window.location.href='@{/books/{id}(id=${book.id},page=${number})}'|" th:text="${number}">1</button>
+                </div>
+                <div>
+                    <button class="btn-active" th:onclick="|window.location.href='@{/books/{id}/(id=${book.id},page=${page.pageNumber})}'|" th:text="${page.pageNumber}">2</button>
+                </div>
+                <div th:each="number : ${page.pagesAfter}">
+                    <button th:onclick="|window.location.href='@{/books/{id}/(id=${book.id},page=${number})}'|" th:text="${number}">3</button>
+                </div>
+                <div><button th:onclick="|window.location.href='@{/books/{id}/(id=${book.id},page=${page.nextPage})}'|">Next</button></div>
+                <div><button th:onclick="|window.location.href='@{/books/{id}/(id=${book.id},page=${page.lastPage})}'|">Last</button></div>
+            </div>
+        </div>
+        <div style="width: 38rem; align-self: center; display: flex; flex-direction: column;" th:fragment="add-comment-fragment">
+            <div>Add new</div>
+            <div>
+                <form style="display: flex; flex-direction: column; align-items: center;" method="POST" th:action="@{/comments}">
+                    <input type="hidden" name="bookId" th:value="${book.id}"/>
+                    <textarea rows="4" style="width: 100%; margin:0.5rem;resize: none;" wrap="soft" name="text"></textarea>
+                    <div><button type="submit">Post</button></div>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>

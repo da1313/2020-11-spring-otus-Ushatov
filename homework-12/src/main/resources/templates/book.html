@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>View book</title>
+</head>
+<style>
+    body{
+        padding: 0;
+        margin: 0;
+    }
+    img{
+        max-width: 100%;
+        max-height: 100%;
+        border-radius: 5px;
+    }
+    .main-c{
+        max-width: 1024px;
+        margin: auto;
+        display: flex;
+        flex-direction: column;
+    }
+    .btn-active{
+        background-color: darkgreen;
+        color: white;
+    }
+    .btn-score{
+        background: none; 
+        border: white; 
+        font-size: 1rem;
+        cursor: pointer;
+    }
+    .btn-score:hover{
+        background-color: rgb(255, 253, 162);
+        border-radius: 1rem;
+    }
+</style>
+<body>
+    <header style="height: 70px; background-color: darkgreen; display: flex; justify-content: center; align-items: center;">
+        <div><span style="font-size: 1.5rem; font-weight: bold; color: white;">Book CRUD UI</span></div>
+    </header>
+    <div class="main-c">
+        <div style="padding: 0.5rem; display: flex; flex-direction: row; justify-content: space-between;">
+            <div>
+                <button th:onclick="|window.location.href='@{/books}'|">Books</button>
+                <button th:onclick="|window.location.href='@{/manage}'|">Manage</button>
+            </div>
+            <div>
+                <form method="post" th:action="@{/logout}">
+                    <span style="font-weight: bold; color: blue;" th:text="${email}">Username</span>
+                    <button type="submit">Logout</button>
+                </form>
+            </div>
+        </div>
+        <div style="display: flex; align-self: center;">
+            <div style="width: 13rem; height: 18rem; margin: 0.5rem; display: flex; align-items: center;"><img src="/images/image.jpg"/></div>
+            <div style="width: 25rem; margin: 0.5rem; display: flex; flex-direction: column; justify-content: space-around;">
+                <div>Title:&nbsp;<span th:text="${book.title}"></span></div>
+                <div>Author:&nbsp;<span th:text="${book.author.name}"></span></div>
+                <div>Time:&nbsp;<span th:text="${#temporals.format(book.time, 'dd-MM-yyyy')}"></span></div>
+                <div>Genres:&nbsp;<span th:each="genre: ${book.genres}" th:text="${genre.name} + ' '"></span></div>
+                <div th:with="max = ${book.info.scoreOneCount + book.info.scoreTwoCount + book.info.scoreThreeCount + book.info.scoreFourCount + book.info.scoreFiveCount}">Scores
+                    <div>
+                        <form method="POST" th:action="@{/scores}">
+                            <input type="hidden" name="value" th:value="5"/>
+                            <input type="hidden" name="bookId" th:value="${book.id}"/>
+                            <button class="btn-score" type="submit">
+                                5&nbsp;<progress th:attr="value=${book.info.scoreFiveCount}, max=${max}"></progress>
+                            </button>
+                        </form>
+                    </div>
+                    <div>
+                        <form method="POST" th:action="@{/scores}">
+                            <input type="hidden" name="value" th:value="4"/>
+                            <input type="hidden" name="bookId" th:value="${book.id}"/>
+                            <button class="btn-score" type="submit">
+                                4&nbsp;<progress th:attr="value=${book.info.scoreFourCount}, max=${max}"></progress>
+                            </button>
+                        </form>
+                    </div>
+                    <div>
+                        <form method="POST" th:action="@{/scores}">
+                            <input type="hidden" name="value" th:value="3"/>
+                            <input type="hidden" name="bookId" th:value="${book.id}"/>
+                            <button class="btn-score" type="submit">
+                                3&nbsp;<progress th:attr="value=${book.info.scoreThreeCount}, max=${max}"></progress>
+                            </button>
+                        </form>
+                    </div>
+                    <div>
+                        <form method="POST" th:action="@{/scores}">
+                            <input type="hidden" name="value" th:value="2"/>
+                            <input type="hidden" name="bookId" th:value="${book.id}"/>
+                            <button class="btn-score" type="submit">
+                                2&nbsp;<progress th:attr="value=${book.info.scoreTwoCount}, max=${max}"></progress>
+                            </button>
+                        </form>
+                    </div>
+                    <div>
+                        <form method="POST" th:action="@{/scores}">
+                            <input type="hidden" name="value" th:value="1"/>
+                            <input type="hidden" name="bookId" th:value="${book.id}"/>
+                            <button class="btn-score" type="submit">
+                                1&nbsp;<progress th:attr="value=${book.info.scoreOneCount}, max=${max}"></progress>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="width: 38rem; align-self: center;">
+            <div style="margin: 0.5rem;">Description</div>
+            <div>
+                <div th:text="${book.description}"></div>
+            </div>
+        </div>
+        <div th:replace="(${page.lastPage == 0})? ~{fragments :: comments-fragment-empty} : ~{fragments :: comments-fragment}"></div>
+        <div th:replace="~{fragments :: add-comment-fragment}"></div>
+    </div>
+</body>
+</html>
