@@ -67,7 +67,7 @@ function CommentComponent( {id} ){
                 <div className="comment" key={c.id}>
                     <div className="author-cont">
                         <div className="ava-cont">
-                            <img src="http://localhost:8080//books/image/download"/>
+                            <img src={"/image/" + id}/>
                         </div>
                         <div>{c.username}</div>
                     </div>

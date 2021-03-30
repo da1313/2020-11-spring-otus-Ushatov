@@ -22,7 +22,7 @@ function BookViewComponent(){
         <div>
             <div className="book-view-cont">
                 <div className="book-image-cont">
-                    <img src="http://localhost:8080//books/image/download"/>
+                    <img src={"/image/" + id}/>
                 </div>
                 <div className="book-view-details-cont">
                     <div>Title: {state.title && state.title}</div>

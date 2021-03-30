@@ -1,6 +1,7 @@
 package org.course.service;
 
 import lombok.AllArgsConstructor;
+import org.course.api.pojo.BookShort;
 import org.course.api.requests.BookListRequest;
 import org.course.api.requests.BookRequest;
 import org.course.api.responces.BookInfoResponse;
@@ -10,7 +11,6 @@ import org.course.domain.Book;
 import org.course.domain.Genre;
 import org.course.domain.Info;
 import org.course.exceptions.EntityNotFoundException;
-import org.course.api.pojo.BookShort;
 import org.course.repository.AuthorRepository;
 import org.course.repository.BookRepository;
 import org.course.repository.GenreRepository;
@@ -34,32 +34,14 @@ public class BookServiceImpl implements BookService {
     private final GenreRepository genreRepository;
 
     @Override
-    public BookListResponse getBooks(BookListRequest request) {
-        PageRequest pageRequest = PageRequest.of(request.getPageNumber(), request.getPageSize(),
-                Sort.by(request.getSort().getField()).descending());
-        List<BookShort> bookList = bookRepository.findAllBookShortAuto(pageRequest);
-        long count = bookRepository.count();
-        int totalPages = (int) Math.ceil(((double) count) / request.getPageSize());
-        return new BookListResponse(bookList, totalPages);
-    }
-
-    @Override
-    public BookListResponse getBooksByGenre(BookListRequest request) {
-        PageRequest pageRequest = PageRequest.of(request.getPageNumber(), request.getPageSize(),
-                Sort.by(request.getSort().getField()).descending());
-        List<BookShort> bookList = bookRepository.findAllBookShortByGenre(request.getGenreId(), pageRequest);
-        long count = bookRepository.findCountByGenres(request.getGenreId()).getValue();
-        int totalPages = (int) Math.ceil(((double) count) / request.getPageSize());
-        return new BookListResponse(bookList, totalPages);
-    }
-
-    @Override
-    public BookListResponse getBooksByQuery(BookListRequest request) {
-        PageRequest pageRequest = PageRequest.of(request.getPageNumber(), request.getPageSize(), Sort.by(request.getSort().getField()).descending());
-        List<BookShort> bookList = bookRepository.findAllBookShortByQuery(request.getQuery(), pageRequest);
-        long count = bookRepository.findCountByQuery(request.getQuery()).getValue();
-        int totalPages = (int) Math.ceil(((double) count) / request.getPageSize());
-        return new BookListResponse(bookList, totalPages);
+    public BookListResponse getBooks(BookListRequest request, String genreId, String query) {
+        if (genreId != null){
+            return getBooksByGenre(request, genreId);
+        }
+        if (query != null){
+            return getBooksByQuery(request, query);
+        }
+        return getBooksPlain(request);
     }
 
     @Override
@@ -99,6 +81,34 @@ public class BookServiceImpl implements BookService {
         bookRepository.delete(book);
     }
 
+    private BookListResponse getBooksPlain(BookListRequest request) {
+        PageRequest pageRequest = PageRequest.of(request.getPageNumber(), request.getPageSize(),
+                Sort.by(request.getSort().getField()).descending());
+        List<BookShort> bookList = bookRepository.findAllBookShortAuto(pageRequest);
+        long count = bookRepository.count();
+        int totalPages = (int) Math.ceil(((double) count) / request.getPageSize());
+        return new BookListResponse(bookList, totalPages);
+    }
+
+
+    private BookListResponse getBooksByGenre(BookListRequest request, String genreId) {
+        PageRequest pageRequest = PageRequest.of(request.getPageNumber(), request.getPageSize(),
+                Sort.by(request.getSort().getField()).descending());
+        List<BookShort> bookList = bookRepository.findAllBookShortByGenre(genreId, pageRequest);
+        long count = bookRepository.findCountByGenres(genreId).getValue();
+        int totalPages = (int) Math.ceil(((double) count) / request.getPageSize());
+        return new BookListResponse(bookList, totalPages);
+    }
+
+
+    private BookListResponse getBooksByQuery(BookListRequest request, String query) {
+        PageRequest pageRequest = PageRequest.of(request.getPageNumber(), request.getPageSize(), Sort.by(request.getSort().getField()).descending());
+        List<BookShort> bookList = bookRepository.findAllBookShortByQuery(query, pageRequest);
+        long count = bookRepository.findCountByQuery(query).getValue();
+        int totalPages = (int) Math.ceil(((double) count) / request.getPageSize());
+        return new BookListResponse(bookList, totalPages);
+    }
+
     private List<Integer> getScoreCount(Info info){
         List<Integer> result = new ArrayList<>();
         result.add(info.getScoreOneCount());
@@ -108,4 +118,5 @@ public class BookServiceImpl implements BookService {
         result.add(info.getScoreFiveCount());
         return result;
     }
+
 }

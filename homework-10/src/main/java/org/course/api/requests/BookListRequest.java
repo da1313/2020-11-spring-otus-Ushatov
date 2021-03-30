@@ -12,8 +12,4 @@ public class BookListRequest {
 
     private final BookSort sort;
 
-    private final String genreId;
-
-    private final String query;
-
 }

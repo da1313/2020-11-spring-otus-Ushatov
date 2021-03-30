@@ -36,7 +36,9 @@ import java.util.List;
 @TestPropertySource(properties = "mongock.enabled=false")
 class BookControllerTest {
 
-    private final static BookListRequest BOOK_LIST_REQUEST = new BookListRequest(0,1, BookSort.NEW,"id","");
+    private final static String GENRE_ID = "1";
+    private final static String QUERY = "1";
+    private final static BookListRequest BOOK_LIST_REQUEST = new BookListRequest(0,1, BookSort.NEW);
     private final static BookListResponse BOOK_LIST_RESPONSE = new BookListResponse(List.of(new BookShort()), 5);
     private final static BookInfoResponse BOOK_INFO_RESPONSE = new BookInfoResponse("1","t", LocalDateTime.now(),new Author("1", "x"),
             List.of(new Genre("1", "y")),List.of(0,1,2,3,4),4.5,3);
@@ -78,14 +80,12 @@ class BookControllerTest {
 
         String bookListResponseJson = mapper.writeValueAsString(BOOK_LIST_RESPONSE);
 
-        Mockito.when(bookService.getBooks(BOOK_LIST_REQUEST)).thenReturn(BOOK_LIST_RESPONSE);
+        Mockito.when(bookService.getBooks(BOOK_LIST_REQUEST, null, null)).thenReturn(BOOK_LIST_RESPONSE);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/books")
                 .param("pageNumber", String.valueOf(BOOK_LIST_REQUEST.getPageNumber()))
                 .param("pageSize", String.valueOf(BOOK_LIST_REQUEST.getPageSize()))
-                .param("sort", BOOK_LIST_REQUEST.getSort().toString())
-                .param("genreId", BOOK_LIST_REQUEST.getGenreId())
-                .param("query", BOOK_LIST_REQUEST.getQuery()))
+                .param("sort", BOOK_LIST_REQUEST.getSort().toString()))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(bookListResponseJson));
 
@@ -98,14 +98,13 @@ class BookControllerTest {
 
         String bookListResponseJson = mapper.writeValueAsString(BOOK_LIST_RESPONSE);
 
-        Mockito.when(bookService.getBooksByGenre(BOOK_LIST_REQUEST)).thenReturn(BOOK_LIST_RESPONSE);
+        Mockito.when(bookService.getBooks(BOOK_LIST_REQUEST, GENRE_ID, null)).thenReturn(BOOK_LIST_RESPONSE);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/books/genre")
+        mockMvc.perform(MockMvcRequestBuilders.get("/books")
                 .param("pageNumber", String.valueOf(BOOK_LIST_REQUEST.getPageNumber()))
                 .param("pageSize", String.valueOf(BOOK_LIST_REQUEST.getPageSize()))
                 .param("sort", BOOK_LIST_REQUEST.getSort().toString())
-                .param("genreId", BOOK_LIST_REQUEST.getGenreId())
-                .param("query", BOOK_LIST_REQUEST.getQuery()))
+                .param("genreId", GENRE_ID))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(bookListResponseJson));
 
@@ -118,14 +117,13 @@ class BookControllerTest {
 
         String bookListResponseJson = mapper.writeValueAsString(BOOK_LIST_RESPONSE);
 
-        Mockito.when(bookService.getBooksByQuery(BOOK_LIST_REQUEST)).thenReturn(BOOK_LIST_RESPONSE);
+        Mockito.when(bookService.getBooks(BOOK_LIST_REQUEST, null, QUERY)).thenReturn(BOOK_LIST_RESPONSE);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/books/search")
+        mockMvc.perform(MockMvcRequestBuilders.get("/books")
                 .param("pageNumber", String.valueOf(BOOK_LIST_REQUEST.getPageNumber()))
                 .param("pageSize", String.valueOf(BOOK_LIST_REQUEST.getPageSize()))
                 .param("sort", BOOK_LIST_REQUEST.getSort().toString())
-                .param("genreId", BOOK_LIST_REQUEST.getGenreId())
-                .param("query", BOOK_LIST_REQUEST.getQuery()))
+                .param("query", QUERY))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(bookListResponseJson));
 

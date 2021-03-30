@@ -17,26 +17,12 @@ public class BookController {
 
     private final BookService bookService;
 
-    private final ImageService imageService;
-
     @GetMapping("/books")
-    public BookListResponse getBooks(BookListRequest request){
+    public BookListResponse getBooks(BookListRequest request,
+                                     @RequestParam(value = "genreId", required = false) String genreId,
+                                     @RequestParam(value = "query", required = false) String query){
 
-        return bookService.getBooks(request);
-
-    }
-
-    @GetMapping("/books/genre")
-    public BookListResponse getBooksByGenre(BookListRequest request){
-
-        return bookService.getBooksByGenre(request);
-
-    }
-
-    @GetMapping("/books/search")
-    public BookListResponse getBooksByQuery(BookListRequest request){
-
-        return bookService.getBooksByQuery(request);
+        return bookService.getBooks(request, genreId, query);
 
     }
 
@@ -45,11 +31,6 @@ public class BookController {
 
         return bookService.getBookById(id);
 
-    }
-
-    @GetMapping("/books/image/download")//todo new contoller
-    public byte[] getImage(){
-        return imageService.getImage();
     }
 
     @PostMapping("/books")

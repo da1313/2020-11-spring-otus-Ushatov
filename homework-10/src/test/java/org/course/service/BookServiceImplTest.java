@@ -49,8 +49,7 @@ class BookServiceImplTest {
     public static final int PAGE_NUMBER = 0;
     public static final int PAGE_SIZE = 1;
     public static final BookSort BOOK_SORT = BookSort.NEW;
-    public static final String GENRE_ID_NOT_USED = "";
-    public static final String QUERY_NOT_USED = "";
+
     @Mock
     private BookRepository bookRepository;
 
@@ -90,7 +89,7 @@ class BookServiceImplTest {
 
         BookService service = new BookServiceImpl(bookRepository, authorRepository, genreRepository);
 
-        BookListRequest request = new BookListRequest(PAGE_NUMBER, PAGE_SIZE, BOOK_SORT, GENRE_ID_NOT_USED, QUERY_NOT_USED);
+        BookListRequest request = new BookListRequest(PAGE_NUMBER, PAGE_SIZE, BOOK_SORT);
 
         PageRequest pageRequest = PageRequest.of(PAGE_NUMBER, PAGE_SIZE, Sort.by(BOOK_SORT.getField()).descending());
 
@@ -100,7 +99,7 @@ class BookServiceImplTest {
 
         BookListResponse expected = new BookListResponse(FAKE_BOOKS, TOTAL_PAGES);
 
-        BookListResponse actual = service.getBooks(request);
+        BookListResponse actual = service.getBooks(request, null, null);
 
         Assertions.assertThat(actual).isEqualTo(expected);
 
@@ -111,7 +110,7 @@ class BookServiceImplTest {
 
         BookService service = new BookServiceImpl(bookRepository, authorRepository, genreRepository);
 
-        BookListRequest request = new BookListRequest(PAGE_NUMBER, PAGE_SIZE, BOOK_SORT, GENRE_ID, QUERY_NOT_USED);
+        BookListRequest request = new BookListRequest(PAGE_NUMBER, PAGE_SIZE, BOOK_SORT);
 
         PageRequest pageRequest = PageRequest.of(PAGE_NUMBER, PAGE_SIZE, Sort.by(BOOK_SORT.getField()).descending());
 
@@ -121,7 +120,7 @@ class BookServiceImplTest {
 
         BookListResponse expected = new BookListResponse(FAKE_BOOKS, TOTAL_PAGES);
 
-        BookListResponse actual = service.getBooksByGenre(request);
+        BookListResponse actual = service.getBooks(request, GENRE_ID, null);
 
         Assertions.assertThat(actual).isEqualTo(expected);
 
@@ -132,7 +131,7 @@ class BookServiceImplTest {
 
         BookService service = new BookServiceImpl(bookRepository, authorRepository, genreRepository);
 
-        BookListRequest request = new BookListRequest(PAGE_NUMBER, PAGE_SIZE, BOOK_SORT, GENRE_ID_NOT_USED, QUERY);
+        BookListRequest request = new BookListRequest(PAGE_NUMBER, PAGE_SIZE, BOOK_SORT);
 
         PageRequest pageRequest = PageRequest.of(PAGE_NUMBER, PAGE_SIZE, Sort.by(BOOK_SORT.getField()).descending());
 
@@ -142,7 +141,7 @@ class BookServiceImplTest {
 
         BookListResponse expected = new BookListResponse(FAKE_BOOKS, TOTAL_PAGES);
 
-        BookListResponse actual = service.getBooksByQuery(request);
+        BookListResponse actual = service.getBooks(request, null, QUERY);
 
         Assertions.assertThat(actual).isEqualTo(expected);
 

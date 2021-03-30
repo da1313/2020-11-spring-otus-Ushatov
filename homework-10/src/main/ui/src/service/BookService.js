@@ -10,14 +10,6 @@ class BookService{
         return axios.get("/books", {params: params});
     }
 
-    getBooksBySearch(params){
-        return axios.get("/books/search", {params: params});
-    }
-
-    getBookByGenre(params){
-        return axios.get("/books/genre/", {params: params});
-    }
-
     createBook(book){
         return axios.post("/books/", book);
     }

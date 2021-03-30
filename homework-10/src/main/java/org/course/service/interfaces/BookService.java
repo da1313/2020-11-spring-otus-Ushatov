@@ -8,11 +8,7 @@ import org.course.domain.Book;
 
 public interface BookService {
 
-    BookListResponse getBooks(BookListRequest request);
-
-    BookListResponse getBooksByGenre(BookListRequest request);
-
-    BookListResponse getBooksByQuery(BookListRequest request);
+    BookListResponse getBooks(BookListRequest request, String genreId, String query);
 
     BookInfoResponse getBookById(String id);
 

@@ -68,7 +68,7 @@ function BookListComponent(){
       sort: sort,
       query: query
     }
-    bookService.getBooksBySearch(req).then(res=>{
+    bookService.getBooks(req).then(res=>{
       let newState = {
         books: res.data.bookList,
         currentPage: pageNumber,
@@ -88,7 +88,7 @@ function BookListComponent(){
       sort: sort,
       genreId: genreId
     }
-    bookService.getBookByGenre(req).then(res=>{
+    bookService.getBooks(req).then(res=>{
       let newState = {
         books: res.data.bookList,
         currentPage: pageNumber,

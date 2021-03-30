@@ -22,7 +22,7 @@ function BookComponent({ book , onDelete }) {
 
   return (
     <div className="bookCont">
-      <button className="buttonLink" onClick={moveToBookView}><img src="http://localhost:8080//books/image/download"/></button>
+      <button className="buttonLink" onClick={moveToBookView}><img src={"/image/" + book.id}/></button>
       <div className="title">{book.title}</div>
       <ul>
         <li>Author: {book.author.name}</li>
