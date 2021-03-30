@@ -26,11 +26,6 @@ public class PageController {
         return "login";
     }
 
-    @GetMapping("/logout")
-    public String getLogoutView(){
-        return "login";
-    }
-
     @GetMapping("/")
     public String redirectToBooks(){
         return "redirect:/books";

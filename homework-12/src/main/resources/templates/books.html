@@ -62,8 +62,10 @@
                 <button th:onclick="|window.location.href='@{/manage}'|">Manage</button>
             </div>
             <div>
-                <span style="font-weight: bold; color: blue;" th:text="${email}">Username</span>
-                <button th:onclick="|window.location.href='@{/logout}'|">Logout</button>
+                <form method="post" th:action="@{/logout}">
+                    <span style="font-weight: bold; color: blue;" th:text="${email}">Username</span>
+                    <button type="submit">Logout</button>
+                </form>
             </div>
         </div>
         <div style="display: flex; flex-wrap: wrap; justify-content: center;">
