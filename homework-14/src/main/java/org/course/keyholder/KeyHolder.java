@@ -8,8 +8,6 @@ public interface KeyHolder<T1, T2> {
 
     T2 getNewKey(EntityName name);
 
-    void setKey(EntityName name, T2 value);
-
     void clear();
 
     String getJob();

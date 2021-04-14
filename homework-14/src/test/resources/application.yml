@@ -23,9 +23,14 @@ spring:
     generate-ddl: false
     hibernate:
       ddl-auto: none
-    show-sql: false
-    properties:
+logging:
+  level:
+    org:
       hibernate:
-        format_sql: false
+        SQL: DEBUG
+      type:
+        descriptor:
+          sql:
+            BasicBinder: TRACE
 app:
   storetype: hashmap

@@ -10,23 +10,14 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class TaskletStepConfig {
 
-    private final Tasklet sqlTableScan;
-
     private final Tasklet cleanUpTasklet;
 
     private final StepBuilderFactory stepBuilderFactory;
 
-    public TaskletStepConfig(@Qualifier("tableIdInitializerTasklet") Tasklet sqlTableScan,
-                             @Qualifier("cleanUpTasklet") Tasklet cleanUpTasklet,
+    public TaskletStepConfig(@Qualifier("cleanUpTasklet") Tasklet cleanUpTasklet,
                              StepBuilderFactory stepBuilderFactory) {
-        this.sqlTableScan = sqlTableScan;
         this.cleanUpTasklet = cleanUpTasklet;
         this.stepBuilderFactory = stepBuilderFactory;
-    }
-
-    @Bean
-    public Step tableIdInitializer(){
-        return stepBuilderFactory.get("get-ids").tasklet(sqlTableScan).build();
     }
 
     @Bean

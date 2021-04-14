@@ -1,13 +1,11 @@
 package org.course.keyholder;
 
-import lombok.RequiredArgsConstructor;
+import org.course.keyholder.poller.KeyPoller;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 
 @ConditionalOnProperty(name = "app.storetype", havingValue = "redis")
 @Component
@@ -15,11 +13,11 @@ public class KeyHolderBackwardRedis implements KeyHolder<String, Long> {
 
     private final RedisOperations<Object, Object> redisOperations;
 
-    private final ConcurrentHashMap<EntityName, AtomicLong> idGenerators = new ConcurrentHashMap<>();
+    private final KeyPoller keyPoller;
 
-    public KeyHolderBackwardRedis(RedisOperations<Object, Object> redisOperations) {
+    public KeyHolderBackwardRedis(RedisOperations<Object, Object> redisOperations, KeyPoller keyPoller) {
         this.redisOperations = redisOperations;
-        Arrays.asList(EntityName.values()).forEach(e -> idGenerators.put(e, new AtomicLong()));
+        this.keyPoller = keyPoller;
     }
 
     @Override
@@ -34,12 +32,7 @@ public class KeyHolderBackwardRedis implements KeyHolder<String, Long> {
 
     @Override
     public Long getNewKey(EntityName name) {
-        return idGenerators.get(name).getAndIncrement();
-    }
-
-    @Override
-    public void setKey(EntityName name, Long value) {
-        idGenerators.get(name).set(value);
+        return keyPoller.getNextKey(name);
     }
 
     @Override

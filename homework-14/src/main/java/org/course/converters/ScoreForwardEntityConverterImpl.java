@@ -1,5 +1,6 @@
 package org.course.converters;
 
+import lombok.RequiredArgsConstructor;
 import org.course.domain.nosql.ScoreNosql;
 import org.course.domain.nosql.embedded.BookEmbedded;
 import org.course.domain.nosql.embedded.UserEmbedded;
@@ -12,19 +13,10 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class ScoreForwardEntityConverterImpl implements EntityConverter<Score, ScoreNosql> {
 
-    private static final String JOB_NAME = "sqlToNosqlJob";
-
-    private final List<KeyHolder<Long, String>> keyHolderList;
-
     private final KeyHolder<Long, String> keyHolder;
-
-    public ScoreForwardEntityConverterImpl(@Autowired List<KeyHolder<Long, String>> keyHolderList) {
-        this.keyHolderList = keyHolderList;
-        keyHolder = keyHolderList.stream().filter(k -> k.getJob().equals(JOB_NAME)).findFirst()
-                .orElseThrow(() -> new IllegalStateException("Can't find job with name " + JOB_NAME + " in keyholder declaration"));
-    }
 
     @Override
     public ScoreNosql convert(Score input) {

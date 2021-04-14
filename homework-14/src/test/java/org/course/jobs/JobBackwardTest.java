@@ -6,6 +6,7 @@ import org.course.domain.sql.*;
 import org.course.repository.nosql.*;
 import org.course.repository.sql.*;
 import org.course.service.FakeNosqlDataHandler;
+import org.course.service.FakeSqlDataHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,6 +37,9 @@ public class JobBackwardTest {
     private JobRepository jobRepository;
 
     private JobLauncherTestUtils jobLauncherTestUtils;
+
+    @Autowired
+    private FakeSqlDataHandler fakeSqlDataHandler;
 
     @Autowired
     private FakeNosqlDataHandler fakeNosqlDataHandler;
@@ -85,6 +89,8 @@ public class JobBackwardTest {
     @Test
     void shouldConvertMongoDatabaseToSql() throws Exception {
         //generated data has unique field content
+        fakeNosqlDataHandler.clearData();
+        fakeSqlDataHandler.clearData();
         fakeNosqlDataHandler.initData();
 
         JobParameters jobParameters = new JobParametersBuilder().addLong(PAGE_SIZE_NAME, PAGE_SIZE).toJobParameters();
@@ -141,9 +147,9 @@ public class JobBackwardTest {
         }
 
         Assertions.assertThat(scoreList.size()).isEqualTo(scoreNosqlList.size());
-        long mismatchCount = scoreNosqlList.stream().filter(scoreNosql -> scoreList.stream()
-                .filter(s -> scoreEquals(s, scoreNosql)).count() != 1).count();
-        Assertions.assertThat(mismatchCount).isEqualTo(0);
+        List<ScoreNosql> collect = scoreNosqlList.stream().filter(scoreNosql -> scoreList.stream()
+                .filter(s -> scoreEquals(s, scoreNosql)).count() != 1).collect(Collectors.toList());
+        Assertions.assertThat(collect.size()).isEqualTo(0);
     }
 
     private boolean bookEquals(Book book, BookNosql bookNosql){

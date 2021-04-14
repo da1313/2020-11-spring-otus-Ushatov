@@ -111,7 +111,6 @@ public class FakeSqlDataHandler {
             scoreList.add(scoreRepository.save(score));
             k++;
         }
-
     }
 
 }

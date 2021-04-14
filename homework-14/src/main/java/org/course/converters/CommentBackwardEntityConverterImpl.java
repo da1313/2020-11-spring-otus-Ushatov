@@ -1,5 +1,6 @@
 package org.course.converters;
 
+import lombok.RequiredArgsConstructor;
 import org.course.domain.nosql.CommentNosql;
 import org.course.domain.sql.Book;
 import org.course.domain.sql.Comment;
@@ -12,19 +13,10 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class CommentBackwardEntityConverterImpl implements EntityConverter<CommentNosql, Comment> {
 
-    private final static String JOB_NAME = "nosqlToSqlJob";
-
-    private final List<KeyHolder<String, Long>> keyHolderList;
-
     private final KeyHolder<String, Long> keyHolder;
-
-    public CommentBackwardEntityConverterImpl(@Autowired List<KeyHolder<String, Long>> keyHolderList) {
-        this.keyHolderList = keyHolderList;
-        keyHolder = keyHolderList.stream().filter(k -> k.getJob().equals(JOB_NAME)).findFirst()
-                .orElseThrow(() -> new IllegalStateException("Can't find job with name " + JOB_NAME + " in keyholder declaration"));
-    }
 
     @Override
     public Comment convert(CommentNosql input) {

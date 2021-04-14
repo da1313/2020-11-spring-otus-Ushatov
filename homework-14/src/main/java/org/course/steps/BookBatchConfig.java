@@ -41,8 +41,6 @@ public class BookBatchConfig {
 
     private final MongoOperations mongoOperations;
 
-    private final CustomBookWriter customBookWriter;
-
     @StepScope
     @Bean
     public CustomBookReader sqlBookReaderC(
@@ -98,13 +96,14 @@ public class BookBatchConfig {
 
     @Bean
     public Step nosqlToSqlBookStep(MongoItemReader<BookNosql> reader,
-                                   ItemProcessor<BookNosql, Book> processor){
+                                   ItemProcessor<BookNosql, Book> processor,
+                                   CustomBookWriter writer){
 
         return stepBuilderFactory.get("nosql-to-sql-book")
                 .<BookNosql, Book>chunk(CHUNK_SIZE)
                 .reader(reader)
                 .processor(processor)
-                .writer(customBookWriter)
+                .writer(writer)
                 .build();
     }
 

@@ -35,11 +35,6 @@ public class KeyHolderForwardHashMap implements KeyHolder<Long, String>{
     }
 
     @Override
-    public void setKey(EntityName name, String value) {
-
-    }
-
-    @Override
     public void clear() {
         Arrays.asList(EntityName.values()).forEach(e -> sqlToNosql.get(e).clear());
     }

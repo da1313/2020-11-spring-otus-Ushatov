@@ -1,5 +1,6 @@
 package org.course.converters;
 
+import lombok.RequiredArgsConstructor;
 import org.course.domain.nosql.BookNosql;
 import org.course.domain.sql.Author;
 import org.course.domain.sql.Book;
@@ -16,19 +17,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class BookBackwardEntityConverterImpl implements EntityConverter<BookNosql, Book>{
 
-    private final static String JOB_NAME = "nosqlToSqlJob";
-
-    private final List<KeyHolder<String, Long>> keyHolderList;
-
     private final KeyHolder<String, Long> keyHolder;
-
-    public BookBackwardEntityConverterImpl(@Autowired List<KeyHolder<String, Long>> keyHolderList) {
-        this.keyHolderList = keyHolderList;
-        keyHolder = keyHolderList.stream().filter(k -> k.getJob().equals(JOB_NAME)).findFirst()
-                .orElseThrow(() -> new IllegalStateException("Can't find job with name " + JOB_NAME + " in keyholder declaration"));
-    }
 
     @Override
     public Book convert(BookNosql input) {

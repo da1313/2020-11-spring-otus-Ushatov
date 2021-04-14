@@ -134,7 +134,6 @@ public class FakeNosqlDataHandler {
             scoreList.add(scoreRepository.save(score));
             k++;
         }
-
     }
 
 }

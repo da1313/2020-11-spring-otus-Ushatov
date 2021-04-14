@@ -31,11 +31,6 @@ public class KeyHolderForwardRedis implements KeyHolder<Long, String> {
     }
 
     @Override
-    public void setKey(EntityName name, String value) {
-
-    }
-
-    @Override
     public void clear() {
         Arrays.asList(EntityName.values()).forEach(e -> redisOperations.delete(e));
     }

@@ -33,16 +33,16 @@ public class CustomBookReader extends AbstractPagingItemReader<Book> {
             results.clear();
         }
 
-        List<Book> resultList = entityManager.createQuery("select b from Book b join fetch b.author order by b.id", Book.class)
+        List<Book> bookList = entityManager.createQuery("select b from Book b join fetch b.author order by b.id", Book.class)
                 .setMaxResults(getPageSize())
                 .setFirstResult(getPage() * getPageSize()).getResultList();
 
-        List<Book> resultList1 = entityManager
+        List<Book> bookListWithFetchedGenres = entityManager
                 .createQuery("select distinct b from Book b left join fetch b.genres where b in :bookList order by b.id", Book.class)
-                .setParameter("bookList", resultList)
+                .setParameter("bookList", bookList)
                 .getResultList();
 
-        results.addAll(resultList1);
+        results.addAll(bookListWithFetchedGenres);
     }
 
     @Override

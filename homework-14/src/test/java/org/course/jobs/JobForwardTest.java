@@ -5,6 +5,7 @@ import org.course.domain.nosql.*;
 import org.course.domain.sql.*;
 import org.course.repository.nosql.*;
 import org.course.repository.sql.*;
+import org.course.service.FakeNosqlDataHandler;
 import org.course.service.FakeSqlDataHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -36,6 +37,9 @@ class JobForwardTest {
 
     @Autowired
     private FakeSqlDataHandler fakeSqlDataHandler;
+
+    @Autowired
+    private FakeNosqlDataHandler fakeNosqlDataHandler;
 
     @Autowired
     private AuthorRepository authorRepository;
@@ -74,6 +78,8 @@ class JobForwardTest {
     @Test
     void shouldConvertSqlDatabaseToMongoDb() throws Exception {
         //generated data has unique field content
+        fakeSqlDataHandler.clearData();
+        fakeNosqlDataHandler.clearData();
         fakeSqlDataHandler.initData();
 
         JobExecution jobExecution = jobLauncher.run(sqlToNosqlJob, new JobParametersBuilder().addLong(PAGE_SIZE_NAME, PAGE_SIZE).toJobParameters());

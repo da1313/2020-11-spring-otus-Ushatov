@@ -24,8 +24,6 @@ public class JobBackwardConfig {
 
     private final Step nosqlToSqlScoreStep;
 
-    private final Step tableIdInitializer;
-
     private final Step cleanUp;
 
     public JobBackwardConfig(JobBuilderFactory jobBuilderFactory,
@@ -35,7 +33,6 @@ public class JobBackwardConfig {
                              @Qualifier("nosqlToSqlUserStep") Step nosqlToSqlUserStep,
                              @Qualifier("nosqlToSqlCommentStep") Step nosqlToSqlCommentStep,
                              @Qualifier("nosqlToSqlScoreStep") Step nosqlToSqlScoreStep,
-                             @Qualifier("tableIdInitializer") Step tableIdInitializer,
                              @Qualifier("cleanUp") Step cleanUp) {
         this.jobBuilderFactory = jobBuilderFactory;
         this.nosqlToSqlAuthorStep = nosqlToSqlAuthorStep;
@@ -44,15 +41,13 @@ public class JobBackwardConfig {
         this.nosqlToSqlUserStep = nosqlToSqlUserStep;
         this.nosqlToSqlCommentStep = nosqlToSqlCommentStep;
         this.nosqlToSqlScoreStep = nosqlToSqlScoreStep;
-        this.tableIdInitializer = tableIdInitializer;
         this.cleanUp = cleanUp;
     }
 
     @Bean
     public Job nosqlToSqlJob(){
         return jobBuilderFactory.get("nosql-to-sql")
-                .start(tableIdInitializer)
-                .next(nosqlToSqlAuthorStep)
+                .start(nosqlToSqlAuthorStep)
                 .next(nosqlToSqlGenreStep)
                 .next(nosqlToSqlBookStep)
                 .next(nosqlToSqlUserStep)
