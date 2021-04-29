@@ -1,0 +1,23 @@
+spring:
+  data:
+    mongodb:
+      host: localhost
+      port: 0
+      database: lib
+    rest:
+      basePath: datarest
+  jmx:
+    enabled: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+logging:
+  file:
+    name: test.log
+#  level:
+#    root: debug
