@@ -1,0 +1,44 @@
+.button-disabled{
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+table, th, td {
+
+  border: solid 1px;
+}
+table{
+  width: 100%;
+  text-align: center;
+  border-collapse: collapse;
+}
+
+.main{
+  max-width: 1024px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.nav{
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin: 0.5rem;
+}
+.login-info{
+  margin-right: 0.5rem;
+}
+.login{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.login div{
+  margin: 0.5rem;
+}
+.header{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80px;
+}
