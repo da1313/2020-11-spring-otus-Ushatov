@@ -1,0 +1,13 @@
+FROM maven:3.8.1-openjdk-11
+RUN mkdir -p /opt/tmp/src
+COPY ./src /opt/tmp/src
+COPY ./pom.xml /opt/tmp
+WORKDIR /opt/tmp
+RUN mvn package -DskipTests
+
+FROM openjdk:11
+RUN mkdir -p /opt/project
+WORKDIR /opt/project
+COPY --from=0 /opt/tmp/target/homework* /opt/project
+EXPOSE 8080
+CMD ["java", "-jar", "/opt/project/homework-17-1.0-SNAPSHOT.jar"]
