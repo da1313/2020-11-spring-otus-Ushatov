@@ -8,6 +8,6 @@ RUN mvn package -DskipTests
 FROM openjdk:11
 RUN mkdir -p /opt/project
 WORKDIR /opt/project
-COPY --from=0 /opt/tmp/target/homework* /opt/project
+COPY --from=0 /opt/tmp/target/homework*.jar /opt/project/compiled-project.jar
 EXPOSE 8080
-CMD ["java", "-jar", "/opt/project/homework-17-1.0-SNAPSHOT.jar"]
+CMD ["java", "-jar", "/opt/project/compiled-project.jar"]
