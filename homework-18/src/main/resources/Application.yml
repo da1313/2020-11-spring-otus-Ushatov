@@ -1,0 +1,30 @@
+management.endpoints.web.exposure.include: '*'
+management.endpoint.health.show-details: always
+
+management.health.diskspace.enabled: false
+management.health.circuitbreakers.enabled: true
+management.health.ratelimiters.enabled: false
+
+management.metrics.distribution.percentiles-histogram.http.server.requests: true
+management.metrics.distribution.percentiles-histogram.resilience4j.circuitbreaker.calls: true
+
+spring:
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: lib
+app:
+  init: production
+
+resilience4j.circuitbreaker:
+  instances:
+    bookHandler:
+      registerHealthIndicator: true
+      slidingWindowSize: 1
+      failureRateThreshold: 50
+resilience4j.timelimiter:
+  instances:
+    bookHandler:
+      timeoutDuration: 2s
+      cancelRunningFuture: true
