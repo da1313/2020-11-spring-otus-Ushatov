@@ -1,0 +1,13 @@
+spring:
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: blog
+mongock:
+  change-logs-scan-package:
+    - org.example.changelog
+#  runner-type: applicationrunner
+#logging:
+#  level:
+#    root: debug
