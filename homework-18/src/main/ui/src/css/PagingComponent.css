@@ -1,0 +1,23 @@
+.pagingCont{
+    display: flex;
+    justify-content: center;
+    margin: 0.5rem;
+    padding: 0;
+}
+
+.pagingCont ul{
+    display: inline-flex;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.pagingCont li{
+    margin-right: 0.25rem;
+}
+
+.active{
+    background-color: rgb(37, 131, 255);
+    color: white;
+    border-radius: 1px;
+}

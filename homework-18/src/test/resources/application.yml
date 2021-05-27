@@ -1,0 +1,16 @@
+#mongock:
+#  change-logs-scan-package:
+#    - org.course.changelog
+#  runner-type: ApplicationRunner
+#  enabled: false
+resilience4j.circuitbreaker:
+  instances:
+    bookHandler:
+      registerHealthIndicator: true
+      slidingWindowSize: 1
+      failureRateThreshold: 50
+resilience4j.timelimiter:
+  instances:
+    bookHandler:
+      timeoutDuration: 2s
+      cancelRunningFuture: true

@@ -1,0 +1,15 @@
+.mainCont{
+    display: flex;
+    flex-direction: column;
+    max-width: 1140px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.buttonLink{
+    background: none;
+    margin: 0;
+    padding: 0;
+    border: none;
+    cursor: pointer;
+}
