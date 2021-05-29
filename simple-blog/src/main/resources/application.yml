@@ -4,9 +4,20 @@ spring:
       host: localhost
       port: 27017
       database: blog
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: m63336072@gmail.com
+    password:
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 mongock:
   change-logs-scan-package:
-    - org.example.changelog
+    - org.course.changelog
 #  runner-type: applicationrunner
 #logging:
 #  level:
@@ -17,3 +28,9 @@ blog:
   card:
     x-scale: 5
     y-scale: 3
+  domain: localhost
+  email: noreply@simple-blog.org
+  moderationStatusList:
+    - NEW
+    - ACCEPTED
+    - DECLINED

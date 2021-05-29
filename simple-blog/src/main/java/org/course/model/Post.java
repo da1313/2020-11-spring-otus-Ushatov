@@ -29,7 +29,7 @@ public class Post {
 
     private PostStatistics postStatistics;
 
-    private ModerationStatus moderationStatus;
+    private String moderationStatus;
 
     private LocalDateTime publicationTime;
 

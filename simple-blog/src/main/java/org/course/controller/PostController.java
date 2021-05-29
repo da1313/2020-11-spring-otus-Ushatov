@@ -28,10 +28,9 @@ public class PostController {
     @GetMapping("/posts")
     public Object getPostList(@RequestParam("pageNumber") Integer pageNumber,
                                                 @RequestParam("pageSize") Integer pageSize,
-                                                @RequestParam("sort") String sort){
-//        throw new NullPointerException();
-//        return "???";
-        return postService.getPosts(pageNumber, pageSize, sort);
+                                                @RequestParam("sort") String sort,
+                              @RequestParam("direction") String direction){
+        return postService.getPosts(pageNumber, pageSize, sort, direction);
     }
 
     // moderator user >
@@ -55,7 +54,7 @@ public class PostController {
 
     // moderator user >
     @PutMapping("/moderate/posts/{id}")
-    public Object changeStatus(@PathVariable("id") String postId, ModerationStatus moderationStatus){
+    public Object changeStatus(@PathVariable("id") String postId, String moderationStatus){
         return postService.changeStatus(postId, moderationStatus);
     }
 

@@ -1,9 +1,24 @@
-import { Avatar, Button, TextField, Typography } from "@material-ui/core";
+import {
+  Avatar,
+  Button,
+  IconButton,
+  TextField,
+  Typography,
+} from "@material-ui/core";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useHistory } from "react-router";
 import { AppContext } from "../App";
-import { authFetch, getUserId, useAuth } from "../services/AuthProvider";
+import {
+  authFetch,
+  getUserId,
+  logout,
+  useAuth,
+} from "../services/AuthProvider";
+
+import EditIcon from "@material-ui/icons/Edit";
+import CloseIcon from "@material-ui/icons/Close";
+import DoneIcon from "@material-ui/icons/Done";
 
 function UserProfile() {
   let context = useContext(AppContext);
@@ -14,10 +29,23 @@ function UserProfile() {
 
   let userId = getUserId();
 
+  const [avaFile, setAvaFile] = useState();
+
   const [userData, setUserData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    registrationDate: "",
     role: {
       name: "",
     },
+  });
+
+  const [avaUrl, setAvaUrl] = useState("");
+
+  const [emailError, setEmailError] = useState({
+    error: false,
+    text: "Email",
   });
 
   const [isEdit, setReadOnly] = useState({
@@ -26,6 +54,14 @@ function UserProfile() {
 
   const [isEditOpen, setEditOpen] = useState(false);
 
+  const onInputChange = ({ target: { name, value } }) => {
+    setUserData({ ...userData, [name]: value });
+    setEmailError({
+      error: false,
+      text: "Email",
+    });
+  };
+
   const fetchUserData = () => {
     if (!isAuth) return;
     authFetch(`${window.location.origin}/users/${userId}`)
@@ -33,14 +69,17 @@ function UserProfile() {
         if (response.ok) {
           return response.json();
         } else if (response.status === 403) {
+          logout();
+          context.showAuth();
+          history.push("/");
           return { result: {} };
         } else {
           throw new Error("Error code: " + response.status);
         }
       })
       .then((body) => {
-        console.log(body);
         setUserData(body);
+        setAvaUrl(body.avatarUrl);
       })
       .catch((err) => {
         console.log(err);
@@ -50,38 +89,51 @@ function UserProfile() {
 
   const onDrop = useCallback((acceptedFiles) => {
     let url = URL.createObjectURL(acceptedFiles[0]);
-    setUserData({ ...userData, avatarUrl: url });
-    // Do something with the files
-    // console.log(acceptedFiles);
-    // const formData = new FormData();
-    // formData.append("image", acceptedFiles[0]);
-    // formData.append("xScale", 1);
-    // formData.append("yScale", 1);
-    // let url = new URL(window.location.origin + "/images/header/upload");
-    // authFetch(url, { method: "POST", body: formData })
-    //   .then((response) => {
-    //     if (response.ok) {
-    //       return response.json();
-    //     } else if (response.status === 403) {
-    //       context.showAuth(true);
-    //       history.push("/");
-    //       return { url: "" };
-    //     } else {
-    //       throw new Error("Error code: " + response.status);
-    //     }
-    //   })
-    //   .then((result) => {
-    //     let url = result.url;
-    //     setUserData({ ...userData, avatarUrl: url });
-    //     saveUser();
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //     history.push("/error");
-    //   });
+    setAvaUrl(url);
+    // setUserData({...userData, avatarUrl: url});
+    setAvaFile(acceptedFiles[0]);
   }, []);
 
-  const saveUser = () => {
+  const onUserSave = () => {
+    if (avaFile !== undefined) {
+      const formData = new FormData();
+      formData.append("image", avaFile);
+      formData.append("xScale", 1);
+      formData.append("yScale", 1);
+      let url = new URL(window.location.origin + "/images/header/upload");
+      authFetch(url, { method: "POST", body: formData })
+        .then((response) => {
+          if (response.ok) {
+            return response.json();
+          } else if (response.status === 403) {
+            logout();
+            context.showAuth(true);
+            history.push("/");
+            return { url: "" };
+          } else {
+            throw new Error("Error code: " + response.status);
+          }
+        })
+        .then((body) => {
+          let url = body.url;
+          setAvaFile(undefined);
+          saveUser(url);
+          setEditOpen(false);
+          setReadOnly({ readOnly: true });
+        })
+        .catch((err) => {
+          console.log(err);
+          history.push("/error");
+        });
+    }
+    if (avaFile === undefined) {
+      saveUser();
+      setEditOpen(false);
+      setReadOnly({ readOnly: true });
+    }
+  };
+
+  const saveUser = (url) => {
     authFetch(`${window.location.origin}/users/${userId}`, {
       method: "PUT",
       headers: {
@@ -91,13 +143,14 @@ function UserProfile() {
         firstName: userData.firstName,
         lastName: userData.lastName,
         email: userData.email,
-        avatarUrl: userData.avatarUrl,
+        avatarUrl: url === undefined ? userData.avatarUrl : url,
       }),
     })
       .then((response) => {
         if (response.ok) {
           return response.json();
         } else if (response.status === 403) {
+          logout();
           context.showAuth(true);
           history.push("/");
           return { result: false };
@@ -105,9 +158,18 @@ function UserProfile() {
           throw new Error("Error code: " + response.status);
         }
       })
-      .then((result) => {
-        if (result === true) {
-          history.push("/post/user");
+      .then((body) => {
+        if (body.result === true) {
+          setAvaUrl(url === undefined ? userData.avatarUrl : url);
+          //ava change
+          if (url !== undefined){
+            context.avatar.fetch(!context.avatar.trigger);
+          }
+        } else {
+          setEmailError({
+            error: true,
+            text: "This email address is already taken",
+          });
         }
       })
       .catch((err) => {
@@ -155,6 +217,30 @@ function UserProfile() {
 
   return (
     <div>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <h3 style={{ textAlign: "center" }}>User profile</h3>
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <div style={{ alignSelf: "center" }}>
+            <IconButton onClick={onOpenEdit}>
+              {isEditOpen ? (
+                <CloseIcon color="primary" />
+              ) : (
+                <EditIcon color="primary" />
+              )}
+            </IconButton>
+          </div>
+          {isEditOpen ? (
+            <div style={{ alignSelf: "center" }}>
+              <IconButton onClick={onUserSave}>
+                <DoneIcon color="primary" />
+              </IconButton>
+            </div>
+          ) : (
+            <div></div>
+          )}
+        </div>
+      </div>
+      <hr />
       <div
         style={{
           display: "flex",
@@ -181,7 +267,7 @@ function UserProfile() {
                   borderRadius: 15,
                   color: "rgb(200,200,200)",
                 }}
-                src={userData.avatarUrl}
+                src={avaUrl}
               />
             </div>
             {isEditOpen ? (
@@ -211,64 +297,79 @@ function UserProfile() {
           </div>
         </div>
         <div>
-          <div style={{ margin: "1rem" }}>
+          <div style={{ margin: "1rem", display: "flex" }}>
             <TextField
+              name="firstName"
               value={userData.firstName}
               inputProps={isEdit}
               style={{ width: "100%" }}
               helperText="First name"
+              onChange={onInputChange}
             />
+            {isEditOpen ? (
+              <EditIcon
+                color="primary"
+                style={{ marginTop: 10, marginLeft: 10 }}
+              />
+            ) : (
+              <div></div>
+            )}
           </div>
-          <div style={{ margin: "1rem" }}>
+          <div style={{ margin: "1rem", display: "flex" }}>
             <TextField
+              name="lastName"
               value={userData.lastName}
-              defaultValue={userData.lastName}
               inputProps={isEdit}
               style={{ width: "100%" }}
               helperText="Last name"
+              onChange={onInputChange}
             />
+            {isEditOpen ? (
+              <EditIcon
+                color="primary"
+                style={{ marginTop: 10, marginLeft: 10 }}
+              />
+            ) : (
+              <div></div>
+            )}
           </div>
-          <div style={{ margin: "1rem" }}>
+          <div style={{ margin: "1rem", display: "flex" }}>
             <TextField
+              name="email"
               value={userData.email}
-              helperText="Email"
+              error={emailError.error}
+              helperText={emailError.text}
               inputProps={isEdit}
               style={{ width: "100%" }}
+              onChange={onInputChange}
             />
+            {isEditOpen ? (
+              <EditIcon
+                color="primary"
+                style={{ marginTop: 10, marginLeft: 10 }}
+              />
+            ) : (
+              <div></div>
+            )}
           </div>
           <div style={{ margin: "1rem" }}>
             <TextField
+              name="registrationDate"
               value={userData.registrationDate}
               type="datetime-local"
               helperText="Registration date"
-              inputProps={isEdit}
+              onChange={onInputChange}
             />
           </div>
-          <div style={{ margin: "1rem" }}>
+          {/* <div style={{ margin: "1rem" }}>
             <TextField
               value={userData.role.name}
               helperText="Permission"
               inputProps={isEdit}
               style={{ width: "100%" }}
             />
-          </div>
+          </div> */}
         </div>
-      </div>
-      <div style={{ display: "flex", justifyContent: "center" }}>
-        <div style={{ marginRight: "2rem" }}>
-          <Button variant="outlined" onClick={onOpenEdit}>
-            edit
-          </Button>
-        </div>
-        {isEditOpen ? (
-          <div>
-            <Button variant="outlined" color="primary">
-              save
-            </Button>
-          </div>
-        ) : (
-          <div></div>
-        )}
       </div>
     </div>
   );

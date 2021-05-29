@@ -3,6 +3,7 @@ import { useContext, useState } from "react";
 import { useHistory } from "react-router";
 import { AppContext } from "../App";
 import { authFetch } from "../services/AuthProvider";
+import { logout } from "../services/AuthProvider____";
 
 function AddComment({ postId, comments, setComments, postData, setPostData }) {
   let context = useContext(AppContext);
@@ -32,6 +33,7 @@ function AddComment({ postId, comments, setComments, postData, setPostData }) {
         if (response.ok) {
           return response.json();
         } else if (response.status === 403) {
+          logout();
           context.showAuth(true);
           history.push("/");
           //todo add redirect

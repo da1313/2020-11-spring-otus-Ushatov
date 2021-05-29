@@ -5,10 +5,12 @@ import { useContext, useState } from "react";
 import { AppContext } from "../App";
 import "../css/login.css";
 import { login } from "../services/AuthProvider";
+import { useHistory } from "react-router";
 
 function Login({ show, handleClose }) {
-
   let context = useContext(AppContext);
+
+  let history = useHistory();
 
   const loginClassName =
     show === true ? "modal display-block" : "modal display-none";
@@ -22,7 +24,7 @@ function Login({ show, handleClose }) {
 
   const onChange = ({ target: { name, value } }) => {
     setCredentials({ ...credentials, [name]: value });
-    setError(false)
+    setError(false);
   };
 
   const onSubmit = (event) => {
@@ -35,9 +37,9 @@ function Login({ show, handleClose }) {
     })
       .then((response) => {
         if (response.ok) {
-          let authToken =  response.headers.get("Authorization");
+          let authToken = response.headers.get("Authorization");
           let refreshToken = response.headers.get("Refresh");
-          if (authToken === null || refreshToken === null){
+          if (authToken === null || refreshToken === null) {
             throw new Error();
           }
           return {
@@ -56,10 +58,15 @@ function Login({ show, handleClose }) {
         });
         context.showAuth(false);
         context.avatar.fetch(!context.avatar.trigger);
-        console.log(context);
       })
       .catch((err) => setError(true));
   };
+
+  const moveToRegistration = () =>{
+    history.push("/registration");
+    context.showAuth(false);
+
+  }
 
   return (
     <div className={loginClassName}>
@@ -100,9 +107,7 @@ function Login({ show, handleClose }) {
             <div style={{ marginBottom: "0.5rem" }}>
               <TextField
                 error={isError}
-                helperText={
-                  isError ? "incorrect email or password" : ""
-                }
+                helperText={isError ? "incorrect email or password" : ""}
                 variant="outlined"
                 type="password"
                 name="password"
@@ -114,6 +119,14 @@ function Login({ show, handleClose }) {
             <div style={{ marginBottom: "0.5rem" }}>
               <Button type="submit" variant="contained">
                 Sign in
+              </Button>
+            </div>
+            <div>
+              <Button
+                color="primary"
+                onClick={moveToRegistration}
+              >
+                registration
               </Button>
             </div>
           </div>

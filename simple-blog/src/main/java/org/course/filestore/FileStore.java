@@ -11,8 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
-import java.util.Optional;
+import java.util.List;
 
 @Service
 public class FileStore {
@@ -24,18 +23,13 @@ public class FileStore {
         this.s3 = s3;
     }
 
-    public void save(String path,
-                     String fileName,
-                     Optional<Map<String, String>> optionalMetadata,
-                     InputStream inputStream){
+    public void save(String path, String fileName, InputStream inputStream, long length, List<ImageMetadataItem> imageMetadataItems){
 
         ObjectMetadata objectMetadata = new ObjectMetadata();
 
-        optionalMetadata.ifPresent(map -> {
-            if (!map.isEmpty()){
-                map.forEach(objectMetadata::addUserMetadata);
-            }
-        });
+        objectMetadata.setContentLength(length);
+
+        imageMetadataItems.forEach(item -> objectMetadata.addUserMetadata(item.getKay(), item.getValue()));
 
         try {
             s3.putObject(path, fileName, inputStream, objectMetadata);

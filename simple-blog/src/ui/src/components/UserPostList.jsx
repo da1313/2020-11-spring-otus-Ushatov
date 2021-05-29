@@ -32,6 +32,7 @@ import Popup from "reactjs-popup";
 import { useHistory } from "react-router";
 import { formatDate } from "../services/utils";
 import { AppContext } from "../App";
+import { logout } from "../services/AuthProvider____";
 
 const tableIcons = {
   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -101,6 +102,9 @@ function UserPostList() {
         if (response.ok) {
           return response.json();
         } else if (response.status === 403) {
+          logout();
+          context.showAuth(true);
+          history.push("/");
           return { result: false };
         } else {
           throw new Error("Error code: " + response.status);
@@ -310,8 +314,8 @@ function UserPostList() {
                 if (response.ok) {
                   return response.json();
                 } else if (response.status === 403) {
+                  logout();
                   context.showAuth(true);
-                  //reload page ?
                   history.push("/");
                   return {
                     postByUserList: [],
@@ -356,8 +360,8 @@ function UserPostList() {
                 if (response.ok) {
                   resolve();
                 } else if (response.status === 403) {
+                  logout();
                   context.showAuth();
-                  //reload page ?
                   history.push("/");
                 } else {
                   throw new Error("Error code: " + response.status);

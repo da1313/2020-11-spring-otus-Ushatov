@@ -1,62 +1,59 @@
 package org.course.repository;
 
 import org.assertj.core.api.Assertions;
+import org.course.model.Post;
+import org.course.model.User;
+import org.course.model.embedded.UserShort;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @DisplayName("PostRepository")
 @DataMongoTest(excludeAutoConfiguration = EmbeddedMongoAutoConfiguration.class)
-@Import(TestConfiguration.class)
 class PostRepositoryTest {
 
+    public static final String NEW_FIRST_NAME = "XXXX";
+    public static final String NEW_LASTNAME = "YYYY";
+    public static final String NEW_AVAURL = "ZZZZ";
+    public static final int OVER_COUNT = 1000;
     @Autowired
     private PostRepository postRepository;
 
     @Autowired
-    private DataBeanImpl dataBean;
+    private UserRepository userRepository;
 
     @Test
-    void findPostsSortedByViewCount() {
+    void name() {
 
-        List<Integer> expectedViewCountList = dataBean.getPosts().stream().sorted(Comparator
-                .comparing(post -> post.getPostStatistics().getViewCount(),
-                Integer::compare)).map(post -> post.getPostStatistics().getViewCount()).collect(Collectors.toList());
+        User user = userRepository.findById("12").get();
 
-        List<Integer> actualViewCountList = postRepository.findAll(PageRequest.of(0, 100, Sort.by("PostStatistics.viewCount")
-                .ascending())).getContent().stream().map(post -> post.getPostStatistics().getViewCount())
-                .collect(Collectors.toList());
+        user.setFirstName(NEW_FIRST_NAME);
+        user.setLastName(NEW_LASTNAME);
+        user.setAvatarUrl(NEW_AVAURL);
 
-        Assertions.assertThat(actualViewCountList).isEqualTo(expectedViewCountList);
+        userRepository.save(user);
 
-    }
+        postRepository.updateUserPosts(user.getId(), NEW_FIRST_NAME, NEW_LASTNAME, NEW_AVAURL);
 
-    @Test
-    void findByModerationStatusAndPublicationTimeLessThanEqual() {
+        List<Post> content = postRepository.findByUserId(PageRequest.of(0, OVER_COUNT), user.getId()).getContent();
 
-//        LocalDateTime now = LocalDateTime.now();
-//
-//        List<String> expectedPostList = dataBean.getPosts().stream().filter(post -> post.getModerationStatus()
-//                .equals(ModerationStatus.ACCEPTED))
-//                .filter(post -> post.getPublicationTime().toEpochSecond(ZoneOffset.UTC) < now.toEpochSecond(ZoneOffset.UTC))
-//                .sorted(Comparator.comparing(post -> post.getPublicationTime().toEpochSecond(ZoneOffset.UTC)))
-//                .map(Post::getId)
-//                .collect(Collectors.toList());
-//
-//        List<String> actualPostList = postRepository.findByModerationStatusAndPublicationTimeLessThanEqual(PageRequest.of(0, 100,
-//                Sort.by("publicationTime")), ModerationStatus.ACCEPTED, now).getContent().stream().map(Post::getId)
-//                .collect(Collectors.toList());
-//
-//        Assertions.assertThat(actualPostList).isEqualTo(expectedPostList);
+        content.forEach(post -> Assertions.assertThat(post)
+                        .extracting(Post::getUser)
+                        .extracting(UserShort::getFirstName).isEqualTo(NEW_FIRST_NAME));
+
+        content.forEach(post -> Assertions.assertThat(post)
+                .extracting(Post::getUser)
+                .extracting(UserShort::getLastName).isEqualTo(NEW_LASTNAME));
+
+        content.forEach(post -> Assertions.assertThat(post)
+                .extracting(Post::getUser)
+                .extracting(UserShort::getAvatarUrl).isEqualTo(NEW_AVAURL));
+
 
     }
 }

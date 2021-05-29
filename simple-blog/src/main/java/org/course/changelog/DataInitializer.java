@@ -27,10 +27,12 @@ public class DataInitializer {
         Random random = new Random();
         int userCount = 100;
         int postCount = 500;
+
         List<User> userList = new ArrayList<>();
         List<Post> postList = new ArrayList<>();
         List<Comment> commentList = new ArrayList<>();
         List<Vote> voteList = new ArrayList<>();
+
 
         Permission postRead = new Permission("1", "post-read");
         Permission postWrite = new Permission("2", "post-write");
@@ -59,7 +61,8 @@ public class DataInitializer {
 
         for (int i = 0; i < userCount; i++) {
             User user = new User(String.valueOf(i), "fn" + i, "ln" + i, null, "email" + i,
-                    "$2y$12$2WY2UbzCwWoBCQZdH4MMDevau1jdndHEvm/m6ciQPbqNEe01WZyG.", LocalDateTime.now(), userRole, "/fake/ava.jpg");
+                    "$2y$12$2WY2UbzCwWoBCQZdH4MMDevau1jdndHEvm/m6ciQPbqNEe01WZyG.", LocalDateTime.now(), userRole,
+                    "/fake/ava.jpg", null, true);
             userList.add(user);
             mongockTemplate.save(user);
         }
@@ -89,24 +92,24 @@ public class DataInitializer {
                 }
 
                 int roll2 = random.nextInt(3);
-                ModerationStatus moderationStatus = null;
+                String moderationStatus = null;
                 if (flag){
                     if (roll2 == 0){
-                        moderationStatus = ModerationStatus.NEW;
+                        moderationStatus = "NEW";
                     } else if (roll2 ==1){
-                        moderationStatus = ModerationStatus.ACCEPTED;
+                        moderationStatus = "ACCEPTED";
                     } else {
-                        moderationStatus = ModerationStatus.DECLINED;
+                        moderationStatus = "DECLINED";
                     }
                 } else {
-                    moderationStatus = ModerationStatus.NEW;
+                    moderationStatus = "NEW";
                 }
 
                 int commentCount = 0;
                 int likeCount = 0;
                 int dislikeCount = 0;
                 int viewCount = 0;
-                if (moderationStatus == ModerationStatus.ACCEPTED){
+                if (moderationStatus.equals("ACCEPTED")){
                     commentCount = random.nextInt(userCount - 1);
                     likeCount = random.nextInt(userCount - 1);
                     dislikeCount = random.nextInt(userCount - likeCount - 1);
@@ -132,7 +135,7 @@ public class DataInitializer {
                         LocalDateTime.now(),
                         new UserShort(author.getId(), author.getFirstName(), author.getLastName(), "/fake/ava.jpg"),
                         new PostStatistics(),
-                        ModerationStatus.NEW,
+                        "NEW",
                         null,
                         false,
                         "/fake/cat.jpg");

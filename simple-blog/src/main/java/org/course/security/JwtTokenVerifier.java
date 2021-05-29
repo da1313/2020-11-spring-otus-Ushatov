@@ -46,12 +46,9 @@ public class JwtTokenVerifier extends OncePerRequestFilter {
             return;
         }
 
-        Cookie authCookie = null;
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("Authorization")) authCookie = cookie;
-        }
+        Cookie authCookie = getAuthCookieFromRequest(cookies);
 
-        if (authCookie == null || authCookie.getValue().equals("")){//!!
+        if (authCookie == null || authCookie.getValue().equals("")){
             filterChain.doFilter(request, response);
             return;
         }
@@ -61,36 +58,62 @@ public class JwtTokenVerifier extends OncePerRequestFilter {
             return;
         }
 
-        String sign = authCookie.getValue().replace("Bearer_", "");
-
-        String algoAndClaim = authorizationHeader.replace("Bearer ", "");
-
-        String token = algoAndClaim + "." + sign;
+        String token = getWholeTokenFromCookieAndHeaderParts(authorizationHeader, authCookie);
 
         try{
-            Jws<Claims> claimsJws = Jwts.parserBuilder().
-                    setSigningKey(Keys.hmacShaKeyFor(key.getBytes())).build()
-                    .parseClaimsJws(token);
 
-            Claims body = claimsJws.getBody();
-
-            String username = body.getSubject();
-
-            List<Map<String, String>> authorities = (List<Map<String, String>>) body.get("authorities");
-
-            Set<SimpleGrantedAuthority> grantedAuthoritySet = authorities.stream()
-                    .map(a -> new SimpleGrantedAuthority(a.get("authority"))).collect(Collectors.toSet());
-
-            Authentication authentication = new UsernamePasswordAuthenticationToken(username,
-                    null, grantedAuthoritySet);
-
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-
+            validateTokenOrElseThrow(key, token);
 
         } catch (JwtException e){
+            //todo add some logic when invalid request has come, may be log or ...
             filterChain.doFilter(request, response);
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private void validateTokenOrElseThrow(String key, String token) {
+
+        Claims body = parseToken(key, token);
+
+        Authentication authentication = extractAuthenticationDataFromTokenBody(body);
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+    private Claims parseToken(String key, String token) {
+        Jws<Claims> claimsJws = Jwts.parserBuilder().
+                setSigningKey(Keys.hmacShaKeyFor(key.getBytes())).build()
+                .parseClaimsJws(token);
+
+        return claimsJws.getBody();
+    }
+
+    private Authentication extractAuthenticationDataFromTokenBody(Claims body) {
+
+        String username = body.getSubject();
+
+        List<Map<String, String>> authorities = (List<Map<String, String>>) body.get("authorities");
+
+        Set<SimpleGrantedAuthority> grantedAuthoritySet = authorities.stream()
+                .map(a -> new SimpleGrantedAuthority(a.get("authority"))).collect(Collectors.toSet());
+
+        return new UsernamePasswordAuthenticationToken(username, null, grantedAuthoritySet);
+    }
+
+    private String getWholeTokenFromCookieAndHeaderParts(String authorizationHeader, Cookie authCookie) {
+        String sign = authCookie.getValue().replace("Bearer_", "");
+
+        String algoAndClaim = authorizationHeader.replace("Bearer ", "");
+
+        return algoAndClaim + "." + sign;
+    }
+
+    private Cookie getAuthCookieFromRequest(Cookie[] cookies) {
+        Cookie authCookie = null;
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("Authorization")) authCookie = cookie;
+        }
+        return authCookie;
     }
 }

@@ -12,6 +12,7 @@ import { Avatar, CircularProgress, IconButton } from "@material-ui/core";
 import { formatDate } from "../services/utils";
 import AddComment from "./AddComment";
 import { AppContext } from "../App";
+import { logout } from "../services/AuthProvider____";
 
 function Post() {
   let context = useContext(AppContext);
@@ -74,6 +75,7 @@ function Post() {
         if (response.ok) {
           return response.json();
         } else if (response.status === 403) {
+          logout();
           context.showAuth(true);
           history.push("/");
           //todo add redirect
@@ -107,6 +109,7 @@ function Post() {
         if (response.ok) {
           return response.json();
         } else if (response.status === 403) {
+          logout();
           context.showAuth(true);
           history.push("/");
           //todo add redirect
@@ -149,6 +152,7 @@ function Post() {
         if (response.ok) {
           return response.json();
         } else if (response.status === 403) {
+          logout();
           context.showAuth(true);
           history.push("/");
           //todo add redirect
@@ -192,6 +196,7 @@ function Post() {
         if (response.ok) {
           return response.json();
         } else if (response.status === 403) {
+          logout();
           context.showAuth(true);
           history.push("/");
           //todo add redirect

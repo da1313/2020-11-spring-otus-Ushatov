@@ -53,8 +53,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/images/upload").authenticated()
                 .antMatchers("/posts/user/**").authenticated()
                 .antMatchers("/images/header/upload").authenticated()
+                .antMatchers(HttpMethod.POST, "/users/**").permitAll()
+                .antMatchers("/users/activate/**").permitAll()
                 .antMatchers("/users/**").authenticated()
-                .antMatchers("/user/avatar/**").authenticated()
+                .antMatchers("/users/avatar/**").authenticated()
                 .anyRequest().permitAll();
 
     }

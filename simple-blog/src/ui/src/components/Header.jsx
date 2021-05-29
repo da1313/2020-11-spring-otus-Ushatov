@@ -1,12 +1,18 @@
 import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../App";
-import { authFetch, getUserId, logout, useAuth } from "../services/AuthProvider";
+import {
+  authFetch,
+  getUserId,
+  logout,
+  useAuth,
+} from "../services/AuthProvider";
 import "react-dropdown/style.css";
 import Popup from "reactjs-popup";
 import "../css/user-popup-menu.css";
 import { useHistory } from "react-router";
 import { Avatar } from "@material-ui/core";
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+import CatSvg from "../svg/cat.svg";
 
 function Header() {
   let context = useContext(AppContext);
@@ -19,7 +25,7 @@ function Header() {
 
   const [userAvaUrl, setUserAvaUrl] = useState("");
 
-  context.avatar.trigger = tr; 
+  context.avatar.trigger = tr;
   context.avatar.fetch = setTr;
 
   const onAuthClick = () => {
@@ -40,17 +46,16 @@ function Header() {
   };
 
   const fetchUserAvatar = () => {
-    console.log(isAuth);
-    console.log("fetch ava");
     if (!isAuth) return;
     authFetch(`${window.location.origin}/users/avatar/${getUserId()}`)
       .then((response) => {
         if (response.ok) {
           return response.json();
         } else if (response.status === 403) {
+          logout();
           context.showAuth(true);
           history.push("/");
-          return { body: {url: ""} };
+          return { body: { url: "" } };
         } else {
           throw new Error("Error code: " + response.status);
         }
@@ -77,7 +82,12 @@ function Header() {
         flexBasis: "auto",
       }}
     >
-      <div>
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <div>
+          <button className="btn" style={{ width: 60, marginRight: "3rem" }} onClick={() => history.push("/")}>
+            <img src={CatSvg} />
+          </button>
+        </div>
         <h1>Simple blog</h1>
       </div>
       <div
@@ -120,7 +130,7 @@ function Header() {
           </Popup>
         ) : (
           <div onClick={onAuthClick} style={{ cursor: "pointer" }}>
-            <AccountCircleIcon fontSize="large"/>
+            <AccountCircleIcon fontSize="large" />
           </div>
         )}
       </div>

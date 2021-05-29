@@ -15,6 +15,10 @@ import { useAuth } from "./services/AuthProvider";
 import NotFound from "./components/NotFound";
 import Login from "./components/Login";
 import UserProfile from "./components/UserProfile";
+import Registration from "./components/Registration";
+import UserActivate from "./components/UserActivate";
+import LeftMenu from "./components/LeftMenu";
+import { Autorenew } from "@material-ui/icons";
 
 export const AppContext = React.createContext();
 
@@ -39,7 +43,11 @@ function App() {
             flexBasis: "auto",
           }}
         >
-          <div style={{}}></div>
+          <div style={{width: "25%"}}>
+            <div style={{marginRight: "5rem"}}>
+              <LeftMenu />
+            </div>
+          </div>
           <div style={{ width: "50%" }}>
             <Switch>
               <Route exact path="/">
@@ -87,6 +95,12 @@ function App() {
                     return <Redirect to="/" />;
                   }
                 }}
+              </Route>
+              <Route path="/registration">
+                <Registration/>
+              </Route>
+              <Route path="/user/activate/:id">
+                <UserActivate/>
               </Route>
               <Route path="/error">
                 <h1>Error</h1>

@@ -33,32 +33,53 @@ public class VoteServiceImpl {
             return new GenericResponse(false);
         }
 
-        return voteRepository.findByUserIdAndPostId(userId, post.getId()).map(vote -> {
-            boolean oldVote = vote.getValue();
-            if (oldVote == request.getValue()){
-                return new GenericResponse(false);
-            }
-            vote.setValue(request.getValue());
-            voteRepository.save(vote);
-            if (oldVote){
-                post.getPostStatistics().removeLike();
-                post.getPostStatistics().addDislike();
-            } else {
-                post.getPostStatistics().removeDislike();
-                post.getPostStatistics().addLike();
-            }
-            postRepository.save(post);
-            return new GenericResponse(true);
-        }).orElseGet(() ->{
-            Vote vote = new Vote(null, request.getValue(), userId, request.getPostId(), null, LocalDateTime.now());
-            voteRepository.save(vote);
-            if (request.getValue()){
-               post.getPostStatistics().addLike();
-            } else {
-                post.getPostStatistics().addDislike();
-            }
-            postRepository.save(post);
-            return new GenericResponse(true);
-        });
+        return voteRepository.findByUserIdAndPostId(userId, post.getId())
+                .map(vote -> getResponseWhenUserChangeVote(request, post, vote))
+                .orElseGet(() -> getResponseWhenUserCreateVote(request, post, userId));
+
+    }
+
+    private GenericResponse getResponseWhenUserCreateVote(VoteRequest request, Post post, String userId) {
+        Vote vote = new Vote(null, request.getValue(), userId, request.getPostId(), null, LocalDateTime.now());
+        voteRepository.save(vote);
+
+        updatePostStatisticsWhenNewVoteComes(request, post);
+
+        return new GenericResponse(true);
+    }
+
+    private GenericResponse getResponseWhenUserChangeVote(VoteRequest request, Post post, Vote vote) {
+        boolean oldVote = vote.getValue();
+
+        if (oldVote == request.getValue()){
+            return new GenericResponse(false);
+        }
+
+        vote.setValue(request.getValue());
+        voteRepository.save(vote);
+
+        updatePostStatisticsWhenVoteChanges(post, oldVote);
+
+        return new GenericResponse(true);
+    }
+
+    private void updatePostStatisticsWhenNewVoteComes(VoteRequest request, Post post) {
+        if (request.getValue()){
+           post.getPostStatistics().addLike();
+        } else {
+            post.getPostStatistics().addDislike();
+        }
+        postRepository.save(post);
+    }
+
+    private void updatePostStatisticsWhenVoteChanges(Post post, boolean oldVote) {
+        if (oldVote){
+            post.getPostStatistics().removeLike();
+            post.getPostStatistics().addDislike();
+        } else {
+            post.getPostStatistics().removeDislike();
+            post.getPostStatistics().addLike();
+        }
+        postRepository.save(post);
     }
 }

@@ -4,6 +4,8 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.List;
+
 @ConfigurationProperties(prefix = "blog")
 @Configuration
 @Data
@@ -18,5 +20,11 @@ public class BlogConfiguration {
     private String accessKey;
 
     private String refreshKey;
+
+    private String domain;
+
+    private String email;
+
+    private List<String> moderationStatusList;
 
 }

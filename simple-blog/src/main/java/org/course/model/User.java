@@ -38,6 +38,10 @@ public class User implements UserDetails {
 
     private String avatarUrl;
 
+    private String validationToken;
+
+    private boolean isEnabled;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<GrantedAuthority> authorities = new HashSet<>(role.getPermissionList());
@@ -72,7 +76,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return isEnabled;
     }
 
 }

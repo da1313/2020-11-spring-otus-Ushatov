@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.course.api.request.CommentRequest;
 import org.course.api.response.CommentListResponse;
 import org.course.api.response.GenericResponse;
+import org.course.configuration.BlogConfiguration;
+import org.course.exception.BadConfigurationException;
 import org.course.exception.DocumentNotFoundException;
 import org.course.exception.IllegalCommentAttemptException;
 import org.course.model.Comment;
@@ -26,11 +28,15 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class CommentServiceImpl {
 
+    private static final String ACCEPTED_STATUS = "ACCEPTED";
+
     private final CommentRepository commentRepository;
 
     private final UserRepository userRepository;
 
     private final PostRepository postRepository;
+
+    private final BlogConfiguration blogConfiguration;
 
     public CommentListResponse getComments(Integer pageNumber, Integer pageSize, String sort, String postId) {
 
@@ -51,7 +57,11 @@ public class CommentServiceImpl {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new DocumentNotFoundException(String.format("User with username %s not found", userId)));
 
-        if (post.getModerationStatus() != ModerationStatus.ACCEPTED ||
+        String acceptedStatus = blogConfiguration.getModerationStatusList().stream().filter(status -> status.equals(ACCEPTED_STATUS))
+                .findFirst().orElseThrow(() ->
+                        new BadConfigurationException(String.format("Cant find status %s in configuration properties", ACCEPTED_STATUS)));
+
+        if (!post.getModerationStatus().equals(acceptedStatus) ||
                 post.getIsActive().equals(false) ||
                 post.getPublicationTime().isAfter(LocalDateTime.now())){
             throw new IllegalCommentAttemptException(String.format("User %s, post %s, status %s, is_active %s, pub_time %s, issued at %s",

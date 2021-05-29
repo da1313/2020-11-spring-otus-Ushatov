@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.http.entity.ContentType;
 import org.course.api.response.ImageUrl;
 import org.course.filestore.FileStore;
+import org.course.filestore.ImageMetadataItem;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,12 +27,12 @@ public class ImageServiceImpl {
 
         isImage(file);
 
-        Map<String, String> metadata = extractMetadata(file);
+        List<ImageMetadataItem> metadataItems = getImageMetadataItems(file.getContentType(), file.getSize());
 
         String imageId = UUID.randomUUID().toString();
 
         try {
-            fileStore.save("belfanio-image-upload", imageId, Optional.of(metadata), file.getInputStream());
+            fileStore.save("belfanio-image-upload", imageId, file.getInputStream(), file.getSize(), metadataItems);
         } catch (IOException e) {
             throw new IllegalStateException(e);//todo change to business exe
         }
@@ -43,7 +44,7 @@ public class ImageServiceImpl {
         return fileStore.download("belfanio-image-upload", id);
     }
 
-    public ImageUrl uploadTransformedImage(MultipartFile image,double width,double height) {
+    public ImageUrl uploadTransformedImage(MultipartFile image, double width, double height) {
 
         isFileEmpty(image);
 
@@ -55,23 +56,13 @@ public class ImageServiceImpl {
 
         try {
 
-            BufferedImage bufferedImage = ImageIO.read(image.getInputStream());
-
-            BufferedImage subImage = cropToHeaderSize(bufferedImage, width, height);
-
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-
-            ImageIO.write(subImage, "jpg", byteArrayOutputStream);
-
-            byte[] byteArray = byteArrayOutputStream.toByteArray();
+            byte[] byteArray = getResizedImageByteArray(image, width, height);
 
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArray);
 
-            Map<String, String> metadata = new HashMap<>();
-            metadata.put("Content-type", contentType);
-            metadata.put("Content-length", String.valueOf(byteArray.length));
+            List<ImageMetadataItem> metadataItems = getImageMetadataItems(contentType, byteArray.length);
 
-            fileStore.save("belfanio-image-upload", imageId, Optional.of(metadata), byteArrayInputStream);
+            fileStore.save("belfanio-image-upload", imageId, byteArrayInputStream, byteArray.length, metadataItems);
 
         } catch (IOException e) {
             throw new IllegalStateException(e);//todo change to business exe
@@ -80,7 +71,27 @@ public class ImageServiceImpl {
         return new ImageUrl("/images/" + imageId);
     }
 
-    private BufferedImage cropToHeaderSize(BufferedImage image, double width, double height){
+    private byte[] getResizedImageByteArray (MultipartFile image, double width, double height) throws IOException {
+
+        BufferedImage bufferedImage = ImageIO.read(image.getInputStream());
+
+        BufferedImage subImage = cropToSize(bufferedImage, width, height);
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+        ImageIO.write(subImage, "jpg", byteArrayOutputStream);
+
+        return byteArrayOutputStream.toByteArray();
+    }
+
+    private List<ImageMetadataItem> getImageMetadataItems(String contentType, long size) {
+        List<ImageMetadataItem> metadataItems = new ArrayList<>();
+        metadataItems.add(new ImageMetadataItem("Content-type", contentType));
+        metadataItems.add(new ImageMetadataItem("Content-length", String.valueOf(size)));
+        return metadataItems;
+    }
+
+    private BufferedImage cropToSize(BufferedImage image, double width, double height){
 
         int originalWidth = image.getWidth();
         int originalHeight = image.getHeight();
@@ -96,14 +107,6 @@ public class ImageServiceImpl {
             int newHeight = (int) ((height / width) * originalWidth);
             return image.getSubimage(0,  (originalHeight - newHeight) / 2, originalWidth, newHeight);
         }
-    }
-
-    private Map<String, String> extractMetadata(MultipartFile file) {
-        Map<String, String> metadata = new HashMap<>();
-        System.out.println(file.getContentType());
-        metadata.put("Content-type", file.getContentType());
-        metadata.put("Content-length", String.valueOf(file.getSize()));
-        return metadata;
     }
 
     //todo perform size check!!!

@@ -4,7 +4,7 @@ import ThumbDownIcon from "@material-ui/icons/ThumbDown";
 import { Avatar, Button, IconButton, TextField } from "@material-ui/core";
 import { useContext, useState } from "react";
 import { AppContext } from "../App";
-import { authFetch, getUserId } from "../services/AuthProvider";
+import { authFetch, getUserId, logout } from "../services/AuthProvider";
 import { useHistory } from "react-router";
 
 function Comment({ comment, isAuth }) {
@@ -49,6 +49,7 @@ function Comment({ comment, isAuth }) {
         if (response.ok) {
           return response.json();
         } else if (response.status === 403) {
+          logout();
           context.showAuth(true);
           history.push("/");
           return { result: false };

@@ -6,6 +6,7 @@ import { authFetch } from "../services/AuthProvider";
 import DateTimePicker from "react-datetime-picker";
 import { Button } from "@material-ui/core";
 import { AppContext } from "../App";
+import { logout } from "../services/AuthProvider____";
 
 let quillObject;
 
@@ -89,6 +90,7 @@ function EditPost({ postId, isEdit, isNew }) {
           if (response.ok) {
             return response.json();
           } else if (response.status === 403) {
+            logout();
             context.showAuth(true);
             history.push("/");
             //todo add redirect
@@ -168,6 +170,7 @@ function EditPost({ postId, isEdit, isNew }) {
         if (response.ok) {
           return response.json();
         } else if (response.status === 403) {
+          logout();
           context.showAuth(true);
           history.push("/");
           return { result: false };
@@ -197,6 +200,7 @@ function EditPost({ postId, isEdit, isNew }) {
         if (response.ok) {
           return response.json();
         } else if (response.status === 403) {
+          logout();
           context.showAuth(true);
           history.push("/");
           return { url: "" };
